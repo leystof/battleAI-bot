@@ -1,5 +1,5 @@
 import {Composer} from "grammy";
-import {Context} from "@/utils/context";
+import {Context} from "@/database/models/context";
 
 export const composer = new Composer<Context>()
 composer.errorBoundary((err) => {

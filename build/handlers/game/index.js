@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.composer = void 0;
+const grammy_1 = require("grammy");
+const menu_1 = require("../../handlers/game/menu");
+const help_1 = require("../../handlers/game/help");
+const chooseBet_1 = require("../../handlers/game/match/chooseBet");
+const launch_1 = require("../../handlers/game/match/launch");
+const cancel_1 = require("../../handlers/game/match/cancel");
+exports.composer = new grammy_1.Composer();
+exports.composer.use(menu_1.composer);
+exports.composer.use(help_1.composer);
+exports.composer.use(chooseBet_1.composer);
+exports.composer.use(launch_1.composer);
+exports.composer.use(cancel_1.composer);

@@ -1,5 +1,5 @@
 import {Composer, InlineKeyboard, Keyboard} from "grammy";
-import {Context} from "@/utils/context";
+import {Context} from "@/database/models/context";
 
 export const composer = new Composer<Context>()
 composer.hears('📢 Каналы', start)

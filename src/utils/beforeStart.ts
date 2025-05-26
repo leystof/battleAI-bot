@@ -1,12 +1,12 @@
 import {parseMode} from '@grammyjs/parse-mode'
 
-import {UserMiddleware} from '@/middlewares'
+import {PoolMiddleware, UserMiddleware} from '@/middlewares'
 
 import {bot} from './bot'
 import { setupSession } from './setupSession'
 import {setupHandlers} from "@/handlers";
-import {prisma} from "@/database/prisma";
 import {log} from "@/utils/logger";
+import {dataSourceDatabase} from "@/database";
 
 
 export function beforeStart() {
@@ -14,13 +14,12 @@ export function beforeStart() {
     // bot.api.config.use(apiThrottler())
     setupSession(bot)
     UserMiddleware(bot)
+    PoolMiddleware(bot)
     setupHandlers(bot)
-    prisma.$connect()
+    dataSourceDatabase
+        .initialize()
         .then(() => {
-            log.info("✅ Connected to prisma")
+            log.debug('Successfully connected to database')
         })
-        .catch((err) => {
-            console.error('❌ Error connect to prisma:', err)
-            process.exit(1)
-        })
+        .catch((e) => log.fatal('Error while connect to database ', e))
 }

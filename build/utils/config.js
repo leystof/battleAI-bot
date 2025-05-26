@@ -31,7 +31,14 @@ exports.config = {
         apiKey: process.env.TELEGRAM_API_KEY || ''
     },
     database: {
-        url: process.env.DATABASE_URL || ''
+        type: process.env.DB_TYPE || 'mysql',
+        host: process.env.DB_HOST || 'mariadb',
+        port: parseInt(process.env.DB_PORT || '3306', 10),
+        username: process.env.DB_USERNAME || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || '',
+        logging: process.env.DB_LOGGING === 'true',
+        synchronize: process.env.DB_SYNCHRONIZE === 'true',
     },
     redis: {
         host: process.env.REDIS_HOST || 'localhost',

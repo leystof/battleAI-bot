@@ -4,6 +4,7 @@ exports.setupHandlers = void 0;
 const grammy_1 = require("grammy");
 const other_1 = require("./other");
 const profile_1 = require("./profile");
+const game_1 = require("./game");
 const errorBoundary_1 = require("./other/errorBoundary");
 const scenes_1 = require("../handlers/scenes");
 function setupHandlers(bot) {
@@ -14,6 +15,7 @@ function setupHandlers(bot) {
         composer.use(scenes_1.allScenes.manager());
         composer.use(other_1.composer);
         composer.use(profile_1.composer);
+        composer.use(game_1.composer);
         composer.use(scenes_1.allScenes);
         bot.use(composer);
     }

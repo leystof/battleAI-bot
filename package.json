@@ -5,18 +5,17 @@
   "main": "build/index.js",
   "scripts": {
     "prisma:build": "ts-node src/scripts/build-prisma-schema.ts",
-    "prisma:generate": "npm run prisma:build && prisma generate --schema=prisma/schema.generated.prisma && npx prisma db push",
+    "prisma:generate": "npm run prisma:build && prisma generate --schema=prisma/schema.prisma",
     "prod": "npm run ts-build && node build/index.js prod",
     "ts-build": "tsc && tsc-alias -p tsconfig.json",
     "after-dev-build": "tsc-alias -p tsconfig.json && node build/index.js dev",
-    "dev": "npm run prisma:generate && tsc-watch --onSuccess \"npm run after-dev-build\""
+    "dev": "tsc-watch --onSuccess \"npm run after-dev-build\""
   },
   "keywords": [],
   "author": "@bot",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.15.21",
-    "prisma": "^6.8.2",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3"
   },
@@ -24,11 +23,14 @@
     "@grammyjs/parse-mode": "^1.5.0",
     "@grammyjs/runner": "^2.0.3",
     "@grammyjs/storage-redis": "^2.5.1",
-    "@prisma/client": "^6.8.2",
+    "async-mutex": "^0.5.0",
     "dotenv": "^16.5.0",
     "grammy": "^1.36.3",
     "grammy-scenes": "^10.2.0",
     "ioredis": "^5.6.1",
-    "tslog": "^4.9.3"
+    "mysql": "^2.18.1",
+    "redis": "^4.7.1",
+    "tslog": "^4.9.3",
+    "typeorm": "^0.3.24"
   }
 }

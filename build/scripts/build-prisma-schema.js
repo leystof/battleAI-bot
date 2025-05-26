@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const schemaBase = path_1.default.join(__dirname, '../../prisma/schema.prisma');
+const schemaBase = path_1.default.join(__dirname, '../../prisma/schema.template.prisma');
 const modelsDir = path_1.default.join(__dirname, '../../prisma/models');
-const outPath = path_1.default.join(__dirname, '../../prisma/schema.generated.prisma');
+const outPath = path_1.default.join(__dirname, '../../prisma/schema.prisma');
 const main = () => {
     const base = fs_1.default.readFileSync(schemaBase, 'utf-8');
     const models = fs_1.default

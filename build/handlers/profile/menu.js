@@ -2,18 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.composer = void 0;
 const grammy_1 = require("grammy");
+const user_1 = require("../../database/models/user");
 exports.composer = new grammy_1.Composer();
 exports.composer.hears('👤 Профиль', start);
-const text = () => {
+const text = (ctx) => {
     return `👤 Ваш профиль
 
-ID: 43
-Имя: Ihor
-Баланс: 0 ₽
-Доступный баланс: 0 ₽
-Зарезервировано: 0 ₽
-Статус: ✅ Аккаунт активен
-Отображение никнейма: 👁 Видимо
+ID: ${ctx.user.id}
+Имя: ${ctx.from.first_name}
+Баланс: ${ctx.user.balance} ₽
+Доступный баланс: ${ctx.user.balance} ₽
+Зарезервировано: ${ctx.user.balance} ₽
+Статус аккаунта: ${(ctx.user.status === user_1.UserStatus.ACTIVE) ? '✅ Активен' : '🟥 Заблокирован'}
+Отображение никнейма: ${(ctx.user.usernameVisibility) ? '👁 Виден' : 'Скрыт 🙈'}
 
 📊 Статистика
 Игр сыграно: 0
@@ -25,13 +26,13 @@ ID: 43
 🔢 Очки: 0
 📈 Прогресс: 0%`;
 };
-const keyb = () => {
+const keyb = (ctx) => {
     return new grammy_1.InlineKeyboard()
-        .text("🙈 Скрыть никнейм", "profile hide nickname").row()
+        .text((ctx.user.usernameVisibility) ? '🙈 Скрыть никнейм' : '👁 Открыть никнейм', "profile swap nickname visibility").row()
         .text("👥 Реферальная программа", "refferal menu");
 };
 async function start(ctx) {
-    return ctx.reply(text(), {
-        reply_markup: keyb()
+    return ctx.reply(text(ctx), {
+        reply_markup: keyb(ctx)
     });
 }

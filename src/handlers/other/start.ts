@@ -1,6 +1,8 @@
 import {Composer, Keyboard} from "grammy";
-import {Context} from "@/utils/context";
-import {prisma} from "@/database/prisma";
+import {Context} from "@/database/models/context";
+import {pool} from "@/modules/pool/instance";
+import {MatchType} from "@/database/models/match";
+
 
 export const composer = new Composer<Context>()
 composer.command('start', start)
@@ -19,7 +21,6 @@ export const startKeyb = () => {
         .resized()
 }
 async function start(ctx) {
-    const test = await prisma.
     return ctx.reply(text(),{
         reply_markup: startKeyb()
     })
