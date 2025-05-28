@@ -2,6 +2,7 @@ import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
 import {pool} from "@/modules/pool/instance";
 import {MatchType} from "@/database/models/match";
+import {createImagePromptGame} from "@/handlers/game/match/prompt/createGame";
 
 export const composer = new Composer<Context>()
 composer.callbackQuery(/game launch (\d+) (tag|prompt)/, start)
@@ -18,7 +19,7 @@ const keyb = (ctx: Context) => {
         .text("🚫 Отмена", "game match cancel")
 }
 async function start(ctx: Context) {
-    if (ctx.user.balance <= Number(ctx.match[1])) {
+    if (ctx.user.balance < Number(ctx.match[1])) {
         return insufficientBalance(ctx)
     }
 
@@ -37,8 +38,7 @@ async function start(ctx: Context) {
         })
     }
 
-    ctx.api.sendMessage(pair[0].tgId, "find!")
-    ctx.api.sendMessage(pair[1].tgId, "find!")
+    createImagePromptGame(ctx, pair)
 }
 
 async function insufficientBalance(ctx: Context) {

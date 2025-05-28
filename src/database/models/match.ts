@@ -1,4 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
+import {User} from "@/database/models/user";
 
 export enum MatchType {
     PROMPT = "prompt",
@@ -6,19 +7,32 @@ export enum MatchType {
 
 export enum MatchStatus {
     QUEUE = "queue",
+    WAIT_PROMPTS = "wait_prompts",
     ERROR = "error",
-    FINISH = "finish",
+    SUCCESSFUL = "successful",
 }
 @Entity()
-export class User {
+export class Match {
     @PrimaryGeneratedColumn()
     id: number
+
+    @Column({ name: 'original_prompt', type: "text", default: '' })
+    originalPrompt: string;
 
     @ManyToOne(() => User, { nullable: false })
     player1: User;
 
+    @Column({ name: 'player1_prompt', type: "text", default: '' })
+    player1Prompt: string;
+
     @ManyToOne(() => User, { nullable: false })
     player2: User;
+
+    @Column({ name: 'player2_prompt', type: "text", default: '' })
+    player2Prompt: string;
+
+    @ManyToOne(() => User, { nullable: true })
+    win: User;
 
     @Column({
         type: 'enum',
@@ -37,8 +51,8 @@ export class User {
     @Column({ name: 'bet', type: "int", nullable: false })
     bet: number
 
-    @Column({ name: 'generate_img', type: "boolean", default: false })
-    isGenerateImg: boolean
+    @Column({ name: 'img_url', type: "varchar", default: "" })
+    img_url: string
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;

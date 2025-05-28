@@ -6,6 +6,12 @@ export interface Config {
     bot: {
         apiKey: string
     }
+    openai: {
+        apiKey: string
+    }
+    falai: {
+        apiKey: string
+    }
     database: {
         type: string
         host: string
@@ -25,6 +31,12 @@ export interface Config {
 export let config: Config = {
     bot: {
         apiKey: process.env.TELEGRAM_API_KEY || ''
+    },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY || ''
+    },
+    falai: {
+        apiKey: process.env.FALAI_API_KEY || ''
     },
     database: {
         type: process.env.DB_TYPE || 'mysql',

@@ -13,7 +13,7 @@ const text = (ctx: Context) => {
 const keyb = (ctx: Context) => {
     return new InlineKeyboard()
         .text("📝 Промпт режим", "game choose bet prompt").row()
-        .text("🏷 Тэг режим", "game choose bet tag").row()
+        // .text("🏷 Тэг режим", "game choose bet tag").row()
         .text("⁉️ Что это?", "game help").row()
 }
 async function start(ctx) {

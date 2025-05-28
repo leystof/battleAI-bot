@@ -3,9 +3,10 @@ import {MatchType} from "@/database/models/match";
 import {bot} from "@/utils/bot";
 import {log} from "@/utils/logger";
 
-type Player = {
+export type Player = {
     userId: number
     tgId: number
+    msgId?: number
     type: MatchType
     bet: number
     joinedAt: number

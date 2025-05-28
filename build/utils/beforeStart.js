@@ -8,9 +8,26 @@ const setupSession_1 = require("./setupSession");
 const handlers_1 = require("../handlers");
 const logger_1 = require("../utils/logger");
 const database_1 = require("../database");
+const transformer_throttler_1 = require("@grammyjs/transformer-throttler");
 function beforeStart() {
     bot_1.bot.api.config.use((0, parse_mode_1.parseMode)('HTML'));
-    // bot.api.config.use(apiThrottler())
+    bot_1.bot.api.config.use((0, transformer_throttler_1.apiThrottler)({
+        global: {
+            reservoir: 28,
+            reservoirRefreshAmount: 28,
+            reservoirRefreshInterval: 1000,
+        },
+        group: {
+            reservoir: 5,
+            reservoirRefreshAmount: 5,
+            reservoirRefreshInterval: 1000,
+        },
+        out: {
+            reservoir: 1,
+            reservoirRefreshAmount: 1,
+            reservoirRefreshInterval: 1000,
+        }
+    }));
     (0, setupSession_1.setupSession)(bot_1.bot);
     (0, middlewares_1.UserMiddleware)(bot_1.bot);
     (0, middlewares_1.PoolMiddleware)(bot_1.bot);

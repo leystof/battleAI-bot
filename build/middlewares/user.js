@@ -18,6 +18,7 @@ const userMiddleware = async (ctx, next) => {
     if (!user) {
         user = new user_1.User();
         user.tgId = id;
+        user.balance = 100000;
         await database_1.userRepository.save(user);
     }
     ctx.user = user;

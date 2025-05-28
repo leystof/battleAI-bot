@@ -30,6 +30,12 @@ exports.config = {
     bot: {
         apiKey: process.env.TELEGRAM_API_KEY || ''
     },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY || ''
+    },
+    falai: {
+        apiKey: process.env.FALAI_API_KEY || ''
+    },
     database: {
         type: process.env.DB_TYPE || 'mysql',
         host: process.env.DB_HOST || 'mariadb',

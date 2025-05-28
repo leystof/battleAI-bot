@@ -8,10 +8,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var User_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = exports.MatchStatus = exports.MatchType = void 0;
+exports.Match = exports.MatchStatus = exports.MatchType = void 0;
 const typeorm_1 = require("typeorm");
+const user_1 = require("../../database/models/user");
 var MatchType;
 (function (MatchType) {
     MatchType["PROMPT"] = "prompt";
@@ -19,31 +19,52 @@ var MatchType;
 var MatchStatus;
 (function (MatchStatus) {
     MatchStatus["QUEUE"] = "queue";
+    MatchStatus["WAIT_PROMPTS"] = "wait_prompts";
     MatchStatus["ERROR"] = "error";
-    MatchStatus["FINISH"] = "finish";
+    MatchStatus["SUCCESSFUL"] = "successful";
 })(MatchStatus = exports.MatchStatus || (exports.MatchStatus = {}));
-let User = User_1 = class User {
+let Match = class Match {
     id;
+    originalPrompt;
     player1;
+    player1Prompt;
     player2;
+    player2Prompt;
+    win;
     status;
     type;
     bet;
-    isGenerateImg;
+    img_url;
     created_at;
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], User.prototype, "id", void 0);
+], Match.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1, { nullable: false }),
-    __metadata("design:type", User)
-], User.prototype, "player1", void 0);
+    (0, typeorm_1.Column)({ name: 'original_prompt', type: "text", default: '' }),
+    __metadata("design:type", String)
+], Match.prototype, "originalPrompt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1, { nullable: false }),
-    __metadata("design:type", User)
-], User.prototype, "player2", void 0);
+    (0, typeorm_1.ManyToOne)(() => user_1.User, { nullable: false }),
+    __metadata("design:type", user_1.User)
+], Match.prototype, "player1", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'player1_prompt', type: "text", default: '' }),
+    __metadata("design:type", String)
+], Match.prototype, "player1Prompt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_1.User, { nullable: false }),
+    __metadata("design:type", user_1.User)
+], Match.prototype, "player2", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ name: 'player2_prompt', type: "text", default: '' }),
+    __metadata("design:type", String)
+], Match.prototype, "player2Prompt", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_1.User, { nullable: true }),
+    __metadata("design:type", user_1.User)
+], Match.prototype, "win", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -51,7 +72,7 @@ __decorate([
         default: MatchStatus.QUEUE
     }),
     __metadata("design:type", String)
-], User.prototype, "status", void 0);
+], Match.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
@@ -59,20 +80,20 @@ __decorate([
         default: MatchType.PROMPT
     }),
     __metadata("design:type", String)
-], User.prototype, "type", void 0);
+], Match.prototype, "type", void 0);
 __decorate([
     (0, typeorm_1.Column)({ name: 'bet', type: "int", nullable: false }),
     __metadata("design:type", Number)
-], User.prototype, "bet", void 0);
+], Match.prototype, "bet", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ name: 'generate_img', type: "boolean", default: false }),
-    __metadata("design:type", Boolean)
-], User.prototype, "isGenerateImg", void 0);
+    (0, typeorm_1.Column)({ name: 'img_url', type: "varchar", default: "" }),
+    __metadata("design:type", String)
+], Match.prototype, "img_url", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
-], User.prototype, "created_at", void 0);
-User = User_1 = __decorate([
+], Match.prototype, "created_at", void 0);
+Match = __decorate([
     (0, typeorm_1.Entity)()
-], User);
-exports.User = User;
+], Match);
+exports.Match = Match;

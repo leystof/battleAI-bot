@@ -11,7 +11,7 @@ const text = (ctx) => {
 const keyb = (ctx) => {
     return new grammy_1.InlineKeyboard()
         .text("📝 Промпт режим", "game choose bet prompt").row()
-        .text("🏷 Тэг режим", "game choose bet tag").row()
+        // .text("🏷 Тэг режим", "game choose bet tag").row()
         .text("⁉️ Что это?", "game help").row();
 };
 async function start(ctx) {

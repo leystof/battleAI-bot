@@ -2,6 +2,7 @@ import {Composer, Keyboard} from "grammy";
 import {Context} from "@/database/models/context";
 import {pool} from "@/modules/pool/instance";
 import {MatchType} from "@/database/models/match";
+import {generateImage} from "@/services/falai/generateImg";
 
 
 export const composer = new Composer<Context>()

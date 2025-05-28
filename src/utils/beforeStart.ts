@@ -7,11 +7,28 @@ import { setupSession } from './setupSession'
 import {setupHandlers} from "@/handlers";
 import {log} from "@/utils/logger";
 import {dataSourceDatabase} from "@/database";
+import {apiThrottler} from "@grammyjs/transformer-throttler";
 
 
 export function beforeStart() {
     bot.api.config.use(parseMode('HTML'))
-    // bot.api.config.use(apiThrottler())
+    bot.api.config.use(apiThrottler({
+        global: {
+            reservoir: 28,
+            reservoirRefreshAmount: 28,
+            reservoirRefreshInterval: 1000,
+        },
+        group: {
+            reservoir: 5,
+            reservoirRefreshAmount: 5,
+            reservoirRefreshInterval: 1000,
+        },
+        out: {
+            reservoir: 1,
+            reservoirRefreshAmount: 1,
+            reservoirRefreshInterval: 1000,
+        }
+    }))
     setupSession(bot)
     UserMiddleware(bot)
     PoolMiddleware(bot)

@@ -11,8 +11,7 @@ const text = (ctx: Context) => {
 ID: ${ctx.user.id}
 Имя: ${ctx.from.first_name}
 Баланс: ${ctx.user.balance} ₽
-Доступный баланс: ${ctx.user.balance} ₽
-Зарезервировано: ${ctx.user.balance} ₽
+На выводе: 0 ₽
 Статус аккаунта: ${(ctx.user.status === UserStatus.ACTIVE) ? '✅ Активен' : '🟥 Заблокирован'}
 Отображение никнейма: ${(ctx.user.usernameVisibility) ? '👁 Виден' : 'Скрыт 🙈'}
 
@@ -20,11 +19,8 @@ ID: ${ctx.user.id}
 Игр сыграно: 0
 Побед: 0
 Процент побед: 0%
-Всего заработано: 0 ₽
+Всего заработано: 0 ₽`
 
-🏆 Ранг: 🔰 Новичок
-🔢 Очки: 0
-📈 Прогресс: 0%`
 }
 
 const keyb = (ctx: Context) => {

@@ -4,6 +4,7 @@ exports.composer = void 0;
 const grammy_1 = require("grammy");
 const instance_1 = require("../../../modules/pool/instance");
 const match_1 = require("../../../database/models/match");
+const createGame_1 = require("../../../handlers/game/match/prompt/createGame");
 exports.composer = new grammy_1.Composer();
 exports.composer.callbackQuery(/game launch (\d+) (tag|prompt)/, start);
 const text = (ctx) => {
@@ -17,7 +18,7 @@ const keyb = (ctx) => {
         .text("🚫 Отмена", "game match cancel");
 };
 async function start(ctx) {
-    if (ctx.user.balance <= Number(ctx.match[1])) {
+    if (ctx.user.balance < Number(ctx.match[1])) {
         return insufficientBalance(ctx);
     }
     instance_1.pool.addPlayer({
@@ -33,8 +34,7 @@ async function start(ctx) {
             reply_markup: keyb(ctx)
         });
     }
-    ctx.api.sendMessage(pair[0].tgId, "find!");
-    ctx.api.sendMessage(pair[1].tgId, "find!");
+    (0, createGame_1.createImagePromptGame)(ctx, pair);
 }
 async function insufficientBalance(ctx) {
     return ctx.reply(`У вас недостаточно денег на счету, пополните баланс.`, {
