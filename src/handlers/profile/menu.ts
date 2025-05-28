@@ -13,7 +13,7 @@ ID: ${ctx.user.id}
 Баланс: ${ctx.user.balance} ₽
 На выводе: 0 ₽
 Статус аккаунта: ${(ctx.user.status === UserStatus.ACTIVE) ? '✅ Активен' : '🟥 Заблокирован'}
-Отображение никнейма: ${(ctx.user.usernameVisibility) ? '👁 Виден' : 'Скрыт 🙈'}
+Отображение никнейма: ${(ctx.user.usernameVisibility) ? '👁 Виден' : '🙈 Скрыт'}
 
 📊 Статистика
 Игр сыграно: 0
@@ -26,7 +26,7 @@ ID: ${ctx.user.id}
 const keyb = (ctx: Context) => {
     return new InlineKeyboard()
         .text((ctx.user.usernameVisibility) ? '🙈 Скрыть никнейм' : '👁 Открыть никнейм', "profile swap nickname visibility").row()
-        .text("👥 Реферальная программа", "refferal menu")
+        // .text("👥 Реферальная программа", "refferal menu")
 }
 async function start(ctx) {
     return ctx.reply(text(ctx),{
