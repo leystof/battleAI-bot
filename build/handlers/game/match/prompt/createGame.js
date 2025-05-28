@@ -12,6 +12,7 @@ const instance_1 = require("../../../../modules/pool/instance");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const message_1 = require("../../../../handlers/game/match/helpers/message");
 const checkResult_1 = require("../../../../handlers/game/match/prompt/checkResult");
+const match_2 = require("../../../../modules/timer/match");
 const genText = `<b>Соперник найден!</b>\n\nСоздаю изображение...`;
 const startText = `У вас есть 1 минута, чтобы написать наиболее точное описание этого изображения. Напишите ваш ответ в чат.`;
 const cancelText = `<b>Ошибка при создании изображения, ставки возвращены на ваш баланс</b>`;
@@ -109,12 +110,12 @@ const createImagePromptGame = async (ctx, pair) => {
             catch (e) { }
         }
     }, 45000);
-    setTimeout(async () => {
-        try {
-            await (0, checkResult_1.checkResultPrompt)(match.id);
-        }
-        catch (e) { }
-    }, 65000);
+    (0, match_2.setMatchTimer)(match.id, () => (0, checkResult_1.checkResultPrompt)(match.id), 65000);
+    // setTimeout(async () => {
+    //     try {
+    //         await checkResultPrompt(match.id)
+    //     } catch (e){}
+    // }, 65_000)
 };
 exports.createImagePromptGame = createImagePromptGame;
 function cancelGame(pair) {

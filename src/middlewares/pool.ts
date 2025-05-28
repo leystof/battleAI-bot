@@ -2,7 +2,6 @@ import {InlineKeyboard, NextFunction} from 'grammy'
 import {matchRepository} from "@/database";
 import {pool} from "@/modules/pool/instance";
 import {Context} from "@/database/models/context";
-import {In, MoreThanOrEqual} from "typeorm";
 import {MatchStatus} from "@/database/models/match";
 import {setMatchPrompt} from "@/handlers/game/match/prompt/setPrompt";
 
@@ -31,7 +30,7 @@ export const poolMiddleware = async (ctx: Context, next: NextFunction) => {
             .leftJoinAndSelect("match.player2", "player2")
             .where("match.created_at >= :time", { time: threeMinutesAgo })
             .andWhere("match.status IN (:...statuses)", {
-                statuses: [MatchStatus.WAIT_PROMPTS, MatchStatus.QUEUE]
+                statuses: [MatchStatus.WAIT_PROMPTS, MatchStatus.QUEUE, MatchStatus.ANALYZE]
             })
             .andWhere(
                 "(player1.id = :userId OR player2.id = :userId)",
@@ -40,8 +39,18 @@ export const poolMiddleware = async (ctx: Context, next: NextFunction) => {
             .orderBy("match.created_at", "DESC")
             .getOne();
 
+
+        if (!match) {
+            pool.markGameFinished(ctx.user.id, ctx.user.id)
+            return next()
+        }
+
         if (match.status === MatchStatus.QUEUE) {
             return ctx.reply(`⚠️ Вы находитесь в матче!\nОжидайте генерации картинки`)
+        }
+
+        if (match.status === MatchStatus.ANALYZE) {
+            return ctx.reply(`<b>Идет анализ промптов, ожидайте результата игры.</b>`)
         }
 
         if (match.status === MatchStatus.WAIT_PROMPTS) {

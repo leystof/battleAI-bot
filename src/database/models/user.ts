@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn} from 'typeorm'
+import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
 
 export enum UserStatus {
     ACTIVE = "active",
@@ -36,6 +36,9 @@ export class User {
 
     @Column({ name: 'lose_rate', type: "int", default: 0 })
     loseRate: number
+
+    @ManyToOne(() => User, { nullable: true })
+    refferal: User;
 
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;

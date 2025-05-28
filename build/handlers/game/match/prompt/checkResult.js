@@ -8,10 +8,12 @@ const match_1 = require("../../../../database/models/match");
 const instance_1 = require("../../../../modules/pool/instance");
 const openai_1 = require("../../../../services/openai");
 const logger_1 = require("../../../../utils/logger");
+const match_2 = require("../../../../modules/timer/match");
 let noPromptsUserText = `Никто не ввел промпт, деньги возвращены на баланс с вычетом комисии 10%`;
 let noPromptLoseUserText = `Вы не ввели промпт вовремя, поэтому проиграли.`;
 let noPromptWinUserText = `Соперник не ввел промпт, вы выиграли!`;
 async function checkResultPrompt(matchId) {
+    (0, match_2.clearMatchTimer)(matchId);
     const match = await database_1.matchRepository.findOne({
         where: {
             id: matchId
@@ -20,6 +22,8 @@ async function checkResultPrompt(matchId) {
     });
     if (match.status !== match_1.MatchStatus.WAIT_PROMPTS)
         return true;
+    match.status = match_1.MatchStatus.ANALYZE;
+    await database_1.matchRepository.save(match);
     if (match.player1Prompt === '' && match.player2Prompt === '') {
         instance_1.pool.markGameFinished(match.player1.id, match.player2.id);
         try {
@@ -80,6 +84,7 @@ async function checkResultPrompt(matchId) {
             ]);
             match.status = match_1.MatchStatus.SUCCESSFUL;
             await database_1.matchRepository.save(match);
+            return true;
         }
         catch (e) {
             match.status = match_1.MatchStatus.ERROR;
@@ -87,9 +92,10 @@ async function checkResultPrompt(matchId) {
             return false;
         }
     }
-    let { text } = await openai_1.AI.aiGenerateText({
-        model: openai_1.AI.client("gpt-4o"),
-        prompt: `Ты - судья в игре, где игроки пытаются угадать оригинальный промпт, использованный для генерации изображения.
+    try {
+        let { text } = await openai_1.AI.aiGenerateText({
+            model: openai_1.AI.client("gpt-4o"),
+            prompt: `Ты - судья в игре, где игроки пытаются угадать оригинальный промпт, использованный для генерации изображения.
 
 Оригинальный промпт: "${match.originalPrompt}"
 
@@ -117,39 +123,51 @@ async function checkResultPrompt(matchId) {
 {
   "player1Accuracy": число от 0 до 100,
   "player2Accuracy": число от 0 до 100,
+  "originalPromptRu": "Оригинальный промпт на русском (не больше 170 символов)",
   "reasoning": "Очень краткое объяснение, почему ты присвоил именно такие оценки и какие ключевые различия между ответами"
 }`,
-        temperature: 0.1,
-        maxTokens: 500,
-    });
-    instance_1.pool.markGameFinished(match.player1.id, match.player2.id);
-    text = text.replaceAll("```json", "");
-    text = text.replaceAll("```", "");
-    try {
+            temperature: 0.1,
+            maxTokens: 500,
+        });
+        instance_1.pool.markGameFinished(match.player1.id, match.player2.id);
+        text = text.replaceAll("```json", "");
+        text = text.replaceAll("```", "");
         const result = JSON.parse(text);
         if (result.player1Accuracy > result.player2Accuracy) {
             match.win = match.player1;
             match.player2.balance -= match.bet;
             match.player1.balance += match.bet - (0, getPercent_1.getPercent)(match.bet, 10);
             try {
-                await (0, message_1.sendMsgToUser)(match.win.tgId, (0, message_1.genWinPromptText)(match, result, match.win));
+                await (0, message_1.sendMsgToUser)(match.win.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.win));
             }
             catch (e) { }
             try {
-                await (0, message_1.sendMsgToUser)(match.player2.tgId, (0, message_1.genLosePromptText)(match, result, match.player2));
+                await (0, message_1.sendMsgToUser)(match.player2.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.player2));
             }
             catch (e) { }
         }
-        else {
+        else if (result.player1Accuracy < result.player2Accuracy) {
             match.win = match.player2;
             match.player1.balance -= match.bet;
             match.player2.balance += match.bet - (0, getPercent_1.getPercent)(match.bet, 10);
             try {
-                await (0, message_1.sendMsgToUser)(match.win.tgId, (0, message_1.genWinPromptText)(match, result, match.win));
+                await (0, message_1.sendMsgToUser)(match.win.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.win));
             }
             catch (e) { }
             try {
-                await (0, message_1.sendMsgToUser)(match.player1.tgId, (0, message_1.genLosePromptText)(match, result, match.player1));
+                await (0, message_1.sendMsgToUser)(match.player1.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.player1));
+            }
+            catch (e) { }
+        }
+        else {
+            match.player1.balance -= (0, getPercent_1.getPercent)(match.bet, 10);
+            match.player2.balance -= (0, getPercent_1.getPercent)(match.bet, 10);
+            try {
+                await (0, message_1.sendMsgToUser)(match.player1.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.player1, true));
+            }
+            catch (e) { }
+            try {
+                await (0, message_1.sendMsgToUser)(match.player2.tgId, await (0, message_1.genMatchPromptResultText)(match, result, match.player2, true));
             }
             catch (e) { }
         }

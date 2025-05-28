@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var User_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.UserStatus = void 0;
 const typeorm_1 = require("typeorm");
@@ -16,7 +17,7 @@ var UserStatus;
     UserStatus["ACTIVE"] = "active";
     UserStatus["BAN"] = "ban";
 })(UserStatus = exports.UserStatus || (exports.UserStatus = {}));
-let User = class User {
+let User = User_1 = class User {
     id;
     tgId;
     admin;
@@ -26,6 +27,7 @@ let User = class User {
     points;
     winRate;
     loseRate;
+    refferal;
     created_at;
     updated_at;
 };
@@ -70,6 +72,10 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "loseRate", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => User_1, { nullable: true }),
+    __metadata("design:type", User)
+], User.prototype, "refferal", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], User.prototype, "created_at", void 0);
@@ -77,7 +83,7 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)({ type: 'timestamp' }),
     __metadata("design:type", Date)
 ], User.prototype, "updated_at", void 0);
-User = __decorate([
+User = User_1 = __decorate([
     (0, typeorm_1.Entity)()
 ], User);
 exports.User = User;

@@ -20,6 +20,7 @@ var MatchStatus;
 (function (MatchStatus) {
     MatchStatus["QUEUE"] = "queue";
     MatchStatus["WAIT_PROMPTS"] = "wait_prompts";
+    MatchStatus["ANALYZE"] = "analyze";
     MatchStatus["ERROR"] = "error";
     MatchStatus["SUCCESSFUL"] = "successful";
 })(MatchStatus = exports.MatchStatus || (exports.MatchStatus = {}));

@@ -27,13 +27,20 @@ const poolMiddleware = async (ctx, next) => {
             .leftJoinAndSelect("match.player2", "player2")
             .where("match.created_at >= :time", { time: threeMinutesAgo })
             .andWhere("match.status IN (:...statuses)", {
-            statuses: [match_1.MatchStatus.WAIT_PROMPTS, match_1.MatchStatus.QUEUE]
+            statuses: [match_1.MatchStatus.WAIT_PROMPTS, match_1.MatchStatus.QUEUE, match_1.MatchStatus.ANALYZE]
         })
             .andWhere("(player1.id = :userId OR player2.id = :userId)", { userId: ctx.user.id })
             .orderBy("match.created_at", "DESC")
             .getOne();
+        if (!match) {
+            instance_1.pool.markGameFinished(ctx.user.id, ctx.user.id);
+            return next();
+        }
         if (match.status === match_1.MatchStatus.QUEUE) {
             return ctx.reply(`⚠️ Вы находитесь в матче!\nОжидайте генерации картинки`);
+        }
+        if (match.status === match_1.MatchStatus.ANALYZE) {
+            return ctx.reply(`<b>Идет анализ промптов, ожидайте результата игры.</b>`);
         }
         if (match.status === match_1.MatchStatus.WAIT_PROMPTS) {
             if (ctx.message.text && ctx.message.text.length < 220) {

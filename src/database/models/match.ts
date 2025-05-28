@@ -8,6 +8,7 @@ export enum MatchType {
 export enum MatchStatus {
     QUEUE = "queue",
     WAIT_PROMPTS = "wait_prompts",
+    ANALYZE = "analyze",
     ERROR = "error",
     SUCCESSFUL = "successful",
 }

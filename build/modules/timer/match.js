@@ -11,7 +11,7 @@ function setMatchTimer(matchId, fn, delay) {
             console.error(`Ошибка в таймере матча ${matchId}:`, error);
         }
         finally {
-            exports.matchTimers.delete(matchId); // автоудаление после выполнения
+            exports.matchTimers.delete(matchId);
         }
     }, delay);
     exports.matchTimers.set(matchId, timer);

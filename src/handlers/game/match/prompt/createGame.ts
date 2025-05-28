@@ -10,6 +10,7 @@ import {InputFile} from "grammy";
 import fetch from "node-fetch";
 import {sendMsgPhotoToUser, sendMsgToUser} from "@/handlers/game/match/helpers/message";
 import {checkResultPrompt} from "@/handlers/game/match/prompt/checkResult";
+import {setMatchTimer} from "@/modules/timer/match";
 
 const genText = `<b>Соперник найден!</b>\n\nСоздаю изображение...`
 const startText = `У вас есть 1 минута, чтобы написать наиболее точное описание этого изображения. Напишите ваш ответ в чат.`
@@ -86,11 +87,12 @@ export const createImagePromptGame = async (ctx: Context, pair: Player[]) => {
         }
     }, 45_000)
 
-    setTimeout(async () => {
-        try {
-            await checkResultPrompt(match.id)
-        } catch (e){}
-    }, 65_000)
+    setMatchTimer(match.id, () => checkResultPrompt(match.id), 65_000)
+    // setTimeout(async () => {
+    //     try {
+    //         await checkResultPrompt(match.id)
+    //     } catch (e){}
+    // }, 65_000)
 }
 
 function cancelGame(pair: Player[]) {
