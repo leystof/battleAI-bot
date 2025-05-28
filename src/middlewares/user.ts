@@ -20,9 +20,11 @@ export const userMiddleware = async (ctx, next: NextFunction) => {
         user = new User()
         user.tgId = id
         user.balance = 100_000
+        // ctx.user.balance = 0
         await userRepository.save(user)
     }
 
     ctx.user = user
+
     return next()
 }

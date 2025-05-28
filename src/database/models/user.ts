@@ -22,8 +22,11 @@ export class User {
     })
     status: UserStatus
 
-    @Column({ name: 'balance', type: "int", default: 0 })
+    @Column({ name: 'balance', type: "bigint", default: 0 })
     balance: number
+
+    @Column({ name: 'reservedBalance',type: 'bigint', default: 0 })
+    reservedBalance: string;
 
     @Column({ name: 'username_visibility', type: "boolean", default: 1 })
     usernameVisibility: boolean
