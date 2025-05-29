@@ -1,9 +1,6 @@
 import {Composer, Keyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {pool} from "@/modules/pool/instance";
-import {MatchType} from "@/database/models/match";
-import {generateImage} from "@/services/falai/generateImg";
-
+import {arMoney} from "@/services/ARMoney";
 
 export const composer = new Composer<Context>()
 composer.command('start', start)
@@ -21,7 +18,7 @@ export const startKeyb = () => {
         .text("❓ Правила").row()
         .resized()
 }
-async function start(ctx) {
+async function start(ctx: Context) {
     return ctx.reply(text(),{
         reply_markup: startKeyb()
     })

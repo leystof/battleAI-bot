@@ -16,7 +16,7 @@ const text = (ctx: Context) => {
 
 const keyb = (ctx: Context) => {
     return new InlineKeyboard()
-        .text("💵 Пополнить баланс", "wallet asd").row()
+        .text("💵 Пополнить баланс", "wallet topup").row()
         .text("💸 Вывести средства", "wallet asd").row()
         .text("🔙 Назад к профилю", "profile menu")
 }

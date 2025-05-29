@@ -4,13 +4,20 @@ dotenv.config()
 
 export interface Config {
     bot: {
-        apiKey: string
+        mainApiKey: string
+        alertApiKey: string
     }
     openai: {
         apiKey: string
     }
     falai: {
         apiKey: string
+    }
+    armoney: {
+        apiKey: string
+        secretKey: string
+        shopId: string
+        payUrl: string
     }
     database: {
         type: string
@@ -30,13 +37,20 @@ export interface Config {
 
 export let config: Config = {
     bot: {
-        apiKey: process.env.TELEGRAM_API_KEY || ''
+        mainApiKey: process.env.TELEGRAM_MAIN_API_KEY || '',
+        alertApiKey: process.env.TELEGRAM_ALERT_API_KEY || ''
     },
     openai: {
         apiKey: process.env.OPENAI_API_KEY || ''
     },
     falai: {
         apiKey: process.env.FALAI_API_KEY || ''
+    },
+    armoney: {
+        apiKey: process.env.ARMONEY_API_KEY || '',
+        secretKey: process.env.ARMONEY_SECRET_KEY || '',
+        shopId: process.env.ARMONEY_SHOP_ID || '',
+        payUrl: process.env.ARMONEY_PAY_URL || ''
     },
     database: {
         type: process.env.DB_TYPE || 'mysql',

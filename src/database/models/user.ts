@@ -4,7 +4,7 @@ export enum UserStatus {
     ACTIVE = "active",
     BAN = "ban",
 }
-@Entity()
+@Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn()
     id: number
@@ -43,9 +43,10 @@ export class User {
     @ManyToOne(() => User, { nullable: true })
     refferal: User;
 
+    @UpdateDateColumn({ type: 'timestamp' })
+    updated_at: Date;
+
     @CreateDateColumn({ type: 'timestamp' })
     created_at: Date;
 
-    @UpdateDateColumn({ type: 'timestamp' })
-    updated_at: Date;
 }

@@ -37,6 +37,9 @@ export function beforeStart() {
         .initialize()
         .then(() => {
             log.debug('Successfully connected to database')
+            try {
+
+            } catch (e){}
         })
         .catch((e) => log.fatal('Error while connect to database ', e))
 }

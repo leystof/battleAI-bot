@@ -12,7 +12,7 @@ export enum MatchStatus {
     ERROR = "error",
     SUCCESSFUL = "successful",
 }
-@Entity()
+@Entity({ name: 'matches' })
 export class Match {
     @PrimaryGeneratedColumn()
     id: number
