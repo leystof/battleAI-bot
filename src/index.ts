@@ -15,9 +15,7 @@ const PORT = 8888;
 app.use(bodyParser.json());
 
 app.post('/callback', async (req: Request<any,any, ARMoneyCallbackInvoice>, res: Response) => {
-    console.log('📬 Получен callback:', req.body);
     const body = req.body;
-
     try {await callbackInvoice(body)} catch (e) {}
     res.status(200).send("OK");
 });

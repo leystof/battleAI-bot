@@ -68,7 +68,17 @@ export class ARMoney {
             const res = await this.client.post(`/api/v1/s2s/invoice/${externalId}/cancel/`);
             return res.data;
         } catch (e) {
-            console.log(e)
+            return {
+                error: e.toString()
+            }
+        }
+    }
+
+    async getState(externalId: string) {
+        try {
+            const res = await this.client.get(`/api/v1/s2s/invoice/${externalId}/state/`);
+            return res.data;
+        } catch (e) {
             return {
                 error: e.toString()
             }

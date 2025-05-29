@@ -19,12 +19,13 @@ export const userMiddleware = async (ctx, next: NextFunction) => {
     if (!user) {
         user = new User()
         user.tgId = id
-        user.balance = 100_000
+        user.balance = 1_000
         // ctx.user.balance = 0
         await userRepository.save(user)
     }
 
     ctx.user = user
+    ctx.user.balance = Number(ctx.user.balance) // but balance is BigInt..
 
     return next()
 }

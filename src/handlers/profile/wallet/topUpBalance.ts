@@ -12,6 +12,7 @@ import {
 } from "@/database/models/interfaces/transaction";
 import {transactionRepository} from "@/database";
 import {Transaction} from "@/database/models/transaction";
+import {getPercent} from "@/helpers/getPercent";
 
 export const composer = new Composer<Context>()
 composer.callbackQuery('wallet topup', chooseAmount)
@@ -58,6 +59,7 @@ async function createOrder(ctx: Context) {
     newTx.externalId = createInvoice["id"]
     newTx.user = ctx.user
     newTx.amount = Number(createInvoice["amount"])
+    newTx.percentProvider = 11.5
     newTx.type = TransactionType.TOP_UP
     newTx.status = TransactionStatus.CREATE
     newTx.source = TransactionSource.ARMONEY
@@ -68,7 +70,7 @@ async function createOrder(ctx: Context) {
  
 <b>ID:</b> <code>${createInvoice["id"]}</code>
 <b>Сумма к оплате:</b> <code>${formatIntWithDot(createInvoice["amount"])} ₽</code>
-<b>Сумма которая будет зачислена:</b> <code>${formatIntWithDot(createInvoice["amount"])} ₽</code>
+<b>Сумма которая будет зачислена:</b> <code>${formatIntWithDot(Number(createInvoice["amount"]) - getPercent(Number(createInvoice["amount"]), newTx.percentProvider))} ₽</code>
 `, {
         reply_markup: {
             inline_keyboard: [

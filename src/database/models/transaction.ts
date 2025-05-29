@@ -36,6 +36,9 @@ export class Transaction {
     @Column({ name: 'amount', type: "int", nullable: false })
     amount: number
 
+    @Column({ name: 'percent', type: 'decimal', precision: 5, scale: 2 })
+    percentProvider: number;
+
     @Column({
         type: 'enum',
         enum: TransactionCurrency,
@@ -53,16 +56,16 @@ export class Transaction {
     @Column({
         type: 'enum',
         enum: TransactionAppealState,
-        nullable: false
+        default: null
     })
     appealState: TransactionAppealState
 
     @Column({
         type: 'enum',
-        enum: TransactionAppealState,
-        nullable: false
+        enum: TransactionAppealReason,
+        default: null
     })
-    appealReason: TransactionAppealState
+    appealReason: TransactionAppealReason
 
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
