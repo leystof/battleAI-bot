@@ -1,53 +1,58 @@
-import {configRepository, transactionRepository, userRepository} from "@/database";
+import {configRepository, dataSourceDatabase, transactionRepository, userRepository} from "@/database";
 import {
     ARMoneyAppealState,
     ARMoneyCallbackInvoice,
     ARMoneyToTransactionAppealReason,
     ARMoneyToTransactionStatus,
-    ARMoneyInvoiceStatus, ARMoneyToTransactionAppealState
+    ARMoneyInvoiceStatus,
+    ARMoneyToTransactionAppealState
 } from "@/services/ARMoney/interfaces";
 import {
-    TransactionAppealState,
-    TransactionStatus
+    TransactionStatus,
+    TransactionAppealState
 } from "@/database/models/interfaces/transaction";
-import {alertBot, bot} from "@/utils/bot";
-import {config} from "dotenv";
-import {getPercent} from "@/helpers/getPercent";
+import { alertBot, bot } from "@/utils/bot";
+import { getPercent } from "@/helpers/getPercent";
+import { getUsername } from "@/helpers/getUsername";
+import {Transaction} from "@/database/models/transaction";
 
 export async function callbackInvoice(data: ARMoneyCallbackInvoice) {
-    const config = await configRepository.findOne({
-        where: { id: 1 },
-    });
+    const config = await configRepository.findOne({ where: { id: 1 } });
 
-    const tx = await transactionRepository.findOne({
-        where: { externalId: data.invoice_id },
-        relations: ['user'],
-    });
+    await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {
+        const tx = await manager.findOne(Transaction, {
+            where: { externalId: data.invoice_id },
+            relations: ["user"],
+            lock: { mode: "pessimistic_write" },
+        });
 
+        try {
+            await alertBot.api.sendMessage(config.channelCallbackId, `
+#ALERT
+#ID_${data.invoice_id}
 
-    try {
+<b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>
+
+<b>📑 TX:</b> <pre>${JSON.stringify(tx)}</pre>
+        `, { parse_mode: "HTML" });
+        } catch (e) {}
+
         if (!tx) {
-            try {
-                await alertBot.api.sendMessage(config.channelCallbackId, `
+            await alertBot.api.sendMessage(config.channelCallbackId, `
 #ERROR
-#ID_${data?.invoice_id}
+#ID_${data.invoice_id}
 
-Транзакция с invoice_id не найдена`, {
-
-                })
-            } catch (e){
-            }
-
+Транзакция с invoice_id не найдена
+            `);
             return;
         }
 
-        const amount = (data.new_amount) ? data.new_amount : data.amount
-        const newAmount = Number(amount) - getPercent(Number(amount), tx.percentProvider)
-
+        const amount = data.new_amount ?? data.amount;
+        const newAmount = Number(amount) - getPercent(Number(amount), tx.percentProvider);
         const newStatus = ARMoneyToTransactionStatus[data.state];
 
         if (String(data.appeal_state)) {
-            tx.appealState = ARMoneyToTransactionAppealState[data.appeal_state]
+            tx.appealState = ARMoneyToTransactionAppealState[data.appeal_state];
             if (String(data.appeal_reason)) {
                 tx.appealReason = ARMoneyToTransactionAppealReason[data.appeal_reason];
             }
@@ -57,40 +62,41 @@ export async function callbackInvoice(data: ARMoneyCallbackInvoice) {
             data.state === ARMoneyInvoiceStatus.PAID ||
             data.appeal_state === ARMoneyAppealState.USER_SUCCESS;
 
-        console.log(isSuccess,tx.status, tx.status !== TransactionStatus.PAID)
-        if (isSuccess && tx.status !== TransactionStatus.PAID) {
-            tx.status = newStatus;
-
-            tx.user.balance = Number(tx.user.balance) + newAmount;
+        if (isSuccess && !tx.processed) {
             tx.status = TransactionStatus.PAID;
-            console.log("update balance")
+            tx.user.balance = Number(tx.user.balance) + newAmount;
+            tx.processed = true;
 
-            await userRepository.save(tx.user);
+            await manager.save(tx.user);
+
             try {
                 await bot.api.sendMessage(tx.user.tgId, `
 #ID_${tx.externalId}
 
 <b>💸 Баланс успешно пополнен: ${newAmount} ₽ </b>
-             `)
-            } catch (e) {}
+                `, { parse_mode: "HTML" });
 
+                await alertBot.api.sendMessage(config.channelInvoiceId, `
+<code>#ID_${tx.externalId}</code>
+
+<b>🏷 User ID:</b> <code>${tx.user.id}</code>
+<b>💸 Пополнение баланса: ${amount} ₽ | ${newAmount} ₽ | ${tx.percentProvider}%</b>
+<b>🙍‍♂️ Пользователь: ${await getUsername(tx.user)}</b>
+                `, { parse_mode: "HTML" });
+            } catch (e) {
+                console.log("Ошибка отправки уведомления:", e);
+            }
         }
 
-        await transactionRepository.save(tx);
-    } catch (e) {
-        try {
-             await alertBot.api.sendMessage(config.channelCallbackId, `
+        tx.status = newStatus;
+        await manager.save(tx);
+    }).catch(async (e) => {
+        await alertBot.api.sendMessage(config.channelCallbackId, `
 #ERROR
-#ID_${tx.externalId}
+#ID_${data.invoice_id}
 
-<b>👾 TYPE: ${tx.type}</b>
 <b>🦴 ERROR:</b> ${e.toString()}
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>
-             `, {
-                 parse_mode: "HTML"
-             })
-        } catch (e){
-            console.log(e)
-        }
-    }
+        `, { parse_mode: "HTML" });
+    });
 }

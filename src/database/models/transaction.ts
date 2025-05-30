@@ -67,6 +67,9 @@ export class Transaction {
     })
     appealReason: TransactionAppealReason
 
+    @Column({ default: false })
+    processed: boolean;
+
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;
 
