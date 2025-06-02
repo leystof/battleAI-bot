@@ -19,6 +19,13 @@ export interface Config {
         shopId: string
         payUrl: string
     }
+    bybit: {
+        apiKey: string
+    }
+    cryptomus: {
+        apiKey: string,
+        shopId: string
+    }
     database: {
         type: string
         host: string
@@ -46,11 +53,18 @@ export let config: Config = {
     falai: {
         apiKey: process.env.FALAI_API_KEY || ''
     },
+    bybit: {
+        apiKey: process.env.BYBIT_API_KEY || ''
+    },
     armoney: {
         apiKey: process.env.ARMONEY_API_KEY || '',
         secretKey: process.env.ARMONEY_SECRET_KEY || '',
         shopId: process.env.ARMONEY_SHOP_ID || '',
         payUrl: process.env.ARMONEY_PAY_URL || ''
+    },
+    cryptomus: {
+        apiKey: process.env.CRYPTOMUS_API_KEY || '',
+        shopId: process.env.CRYPTOMUS_SHOP_ID || '',
     },
     database: {
         type: process.env.DB_TYPE || 'mysql',

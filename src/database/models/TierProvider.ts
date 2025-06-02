@@ -17,7 +17,7 @@ export class TierProvider {
     @Column({
         type: 'enum',
         enum: ProviderTierType,
-        default: null
+        nullable: false
     })
     type: ProviderTierType
 

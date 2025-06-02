@@ -19,12 +19,12 @@ export const dataSourceDatabase = new DataSource({
     //     }
     // },
     // @ts-ignore
-    ssl: true,
-    extra: {
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    },
+    // ssl: true,
+    // extra: {
+    //     ssl: {
+    //         rejectUnauthorized: false,
+    //     },
+    // },
     entities: [User, Match,Transaction, PaymentProvider, TierProvider,Config]
 })
 

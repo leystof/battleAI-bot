@@ -1,7 +1,5 @@
 import {Composer, InputFile, Keyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {arMoney} from "@/services/ARMoney";
-import {bot} from "@/utils/bot";
 
 export const composer = new Composer<Context>()
 composer.command('start', start)

@@ -6,7 +6,7 @@ import {
     ARMoneyToTransactionStatus,
     ARMoneyInvoiceStatus,
     ARMoneyToTransactionAppealState
-} from "@/services/ARMoney/interfaces";
+} from "@/services/payments/ARMoney/interfaces";
 import {
     TransactionStatus,
     TransactionAppealState

@@ -6,6 +6,9 @@ export class Config {
     @PrimaryGeneratedColumn()
     id: number
 
+    @Column({ name: 'currencyName', type: 'varchar', default: ''})
+    currencyName: string
+
     @Column({ name: 'supportUrl', type: 'varchar', default: '' })
     supportUrl: string
 
@@ -35,6 +38,9 @@ export class Config {
 
     @ManyToOne(() => PaymentProvider, { nullable: true })
     paymentRubProvider: PaymentProvider;
+
+    @ManyToOne(() => PaymentProvider, { nullable: true })
+    paymentUsdtProvider: PaymentProvider;
 
     @ManyToOne(() => PaymentProvider, { nullable: true })
     withdrawRubProvider: PaymentProvider;

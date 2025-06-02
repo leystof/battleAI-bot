@@ -10,7 +10,7 @@ export async function getCachedConfig(): Promise<Config | null> {
 
     if (!cachedConfig || now - lastFetch > CACHE_TTL) {
         cachedConfig = await configRepository.findOne({ where: { id: 1 }, relations: [
-            "paymentRubProvider", "withdrawRubProvider"
+            "paymentRubProvider", "withdrawRubProvider", "paymentUsdtProvider"
             ] });
         lastFetch = now;
     }

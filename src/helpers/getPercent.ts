@@ -1,3 +1,3 @@
 export function getPercent(amount: number, percent: number): number {
-    return Number(((amount * percent) / 100).toFixed(0));
+    return Number(((amount * percent) / 100).toFixed(2));
 }

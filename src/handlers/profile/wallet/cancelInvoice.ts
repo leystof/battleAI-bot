@@ -1,6 +1,6 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {arMoney} from "@/services/ARMoney";
+import {arMoney} from "@/services/payments/ARMoney";
 import {Transaction} from "@/database/models/transaction";
 import {transactionRepository} from "@/database";
 import {TransactionStatus} from "@/database/models/interfaces/transaction";

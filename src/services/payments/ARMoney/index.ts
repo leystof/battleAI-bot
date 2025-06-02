@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { config } from "@/utils/config";
-import {ARMoneyInvoicePayload, ARMoneyInvoiceResponse} from "@/services/ARMoney/interfaces";
+import {ARMoneyInvoicePayload, ARMoneyInvoiceResponse} from "@/services/payments/ARMoney/interfaces";
 
 export class ARMoney {
     private client: AxiosInstance;
@@ -49,7 +49,7 @@ export class ARMoney {
         }
     }
 
-    async createInvoice(invoicePayload: ARMoneyInvoicePayload): Promise<ARMoneyInvoiceResponse | {error: string}> {
+    async createInvoice(invoicePayload: ARMoneyInvoicePayload): Promise<ARMoneyInvoiceResponse> {
         try {
             const res = await this.client.post(`/api/v1/s2s/invoices/create/`, {
                 ...invoicePayload,
@@ -58,9 +58,9 @@ export class ARMoney {
 
             return res.data as ARMoneyInvoiceResponse;
         } catch (e) {
-            return {
-                error: e.toString()
-            }
+            const msg = e?.response?.data?.message || e.message || "Unknown error";
+            console.error("[ARMoney] create invoice error:", msg);
+            throw new Error(msg);
         }
     }
     async cancelInvoice(externalId: string) {
@@ -97,6 +97,10 @@ export class ARMoney {
                 error: e.toString()
             }
         }
+    }
+
+    async getRubRate() {
+        return 80.2
     }
 }
 

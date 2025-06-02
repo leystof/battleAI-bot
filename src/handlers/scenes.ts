@@ -1,6 +1,6 @@
 import {ScenesComposer} from "grammy-scenes";
 import {Context} from "@/database/models/context";
-import {scene as topUpBalance} from "@/handlers/profile/wallet/topUpBalanceAnotherValue";
+import {scene as topUpBalance} from "@/handlers/profile/wallet/topup/topUpBalanceAnotherValue";
 import {scene as withdrawBalance} from "@/handlers/profile/wallet/withdrawBalance";
 import {scene as notification} from "@/handlers/admin/notification/scene";
 

@@ -3,8 +3,8 @@ import {bot} from "@/utils/bot";
 import {run} from "@grammyjs/runner";
 import bodyParser from "body-parser";
 import express, { Request, Response } from 'express';
-import {callbackInvoice} from "@/services/ARMoney/callbackInvoice";
-import {ARMoneyCallbackInvoice} from "@/services/ARMoney/interfaces";
+import {callbackInvoice} from "@/services/payments/ARMoney/callbackInvoice";
+import {ARMoneyCallbackInvoice} from "@/services/payments/ARMoney/interfaces";
 
 // Это mvp версия бота, которая легко масшабируется, сейчас я немного написал шит код
 // который надо будет переписать
