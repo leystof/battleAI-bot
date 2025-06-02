@@ -67,6 +67,8 @@ export async function createInvoiceRub(ctx: Context) {
             }
         })
     }
+    const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentUsdtProvider}})
+
     await ctx.editMessageText(`⏳️️️️️️️ Создание ссылки для оплаты...`, {
         reply_markup: {
             inline_keyboard: []
@@ -106,7 +108,7 @@ export async function createInvoiceRub(ctx: Context) {
     newTx.user = ctx.user
     newTx.userId = ctx.user.id
     newTx.amount = Number(createInvoice["amount"])
-    newTx.percentProvider = 11.5 // Переделать
+    newTx.percentProvider = tier.percent
     newTx.type = TransactionType.TOP_UP
     newTx.status = TransactionStatus.CREATE
     newTx.source = configDb.paymentRubProvider

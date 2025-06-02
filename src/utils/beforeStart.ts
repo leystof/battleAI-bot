@@ -8,9 +8,10 @@ import {setupHandlers} from "@/handlers";
 import {log} from "@/utils/logger";
 import {dataSourceDatabase} from "@/database";
 import {apiThrottler} from "@grammyjs/transformer-throttler";
-
+import {startCallbackChecker} from "@/callback";
 
 export function beforeStart() {
+    startCallbackChecker()
     bot.api.config.use(parseMode('HTML'))
     bot.api.config.use(apiThrottler({
         global: {

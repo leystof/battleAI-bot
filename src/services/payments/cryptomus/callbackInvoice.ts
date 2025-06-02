@@ -17,7 +17,7 @@ import { getUsername } from "@/helpers/getUsername";
 import {Transaction} from "@/database/models/transaction";
 import {User} from "@/database/models/user";
 
-export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
+export async function callbackInvoiceCryptomus(data: ARMoneyCallbackInvoice) {
     const config = await configRepository.findOne({ where: { id: 1 } });
 
     await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {

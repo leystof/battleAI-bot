@@ -39,13 +39,18 @@ export class Cryptomus {
     async createInvoice(data: CryptomusInvoicePayload): Promise<CryptomusInvoiceResponse> {
         try {
             const res = await this.client.post("/v1/payment", data);
-            return res.data;
+            return res.data?.["result"];
         } catch (e: any) {
             const msg = JSON.stringify(e?.response?.data) || e.message || "Unknown error";
             console.error("[Cryptomus] createInvoice error:", msg);
             throw new Error(msg);
         }
     }
+
+    async testCallback(data) {
+
+    }
+
 }
 
 

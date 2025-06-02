@@ -42,7 +42,7 @@ export async function createInvoiceUsdt(ctx: Context) {
 
     const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentUsdtProvider}})
 
-    const amount = Number(ctx.match[1])
+    const amount = Number(ctx.match[2])
     await ctx.editMessageText(`⏳️️️️️️️ Создание ссылки для оплаты...`, {
         reply_markup: {
             inline_keyboard: []
@@ -82,8 +82,8 @@ export async function createInvoiceUsdt(ctx: Context) {
     newTx.externalId = operationId
     newTx.user = ctx.user
     newTx.userId = ctx.user.id
-    newTx.amount = Number(createInvoice["amount"])
-    newTx.percentProvider = 11.5 // Переделать
+    newTx.amount = Number(amount)
+    newTx.percentProvider = tier.percent
     newTx.type = TransactionType.TOP_UP
     newTx.status = TransactionStatus.CREATE
     newTx.source = configDb.paymentUsdtProvider
@@ -96,8 +96,7 @@ export async function createInvoiceUsdt(ctx: Context) {
 <b>Перейдите на страницу оплаты</b>`,{
         reply_markup: {
             inline_keyboard: [
-                [{text: "💳 Перейти на страницу оплаты", url: `${createInvoice}`}],
-                [{text: "🚫 Отменить", callback_data: `wallet cancel invoice ${createInvoice["id"]}`}],
+                [{text: "💳 Перейти на страницу оплаты", url: `${createInvoice["url"]}`}]
             ]
         }
     })

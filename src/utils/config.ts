@@ -3,6 +3,9 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 export interface Config {
+    domain: {
+        url: string
+    }
     bot: {
         mainApiKey: string
         alertApiKey: string
@@ -43,6 +46,9 @@ export interface Config {
 }
 
 export let config: Config = {
+    domain: {
+        url: process.env.DOMAIN_URL || ''
+    },
     bot: {
         mainApiKey: process.env.TELEGRAM_MAIN_API_KEY || '',
         alertApiKey: process.env.TELEGRAM_ALERT_API_KEY || ''
