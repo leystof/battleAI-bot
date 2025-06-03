@@ -2,6 +2,7 @@ import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateD
 import {User} from "@/database/models/user/user";
 import {TransactionStatus, TransactionType} from "@/database/models/payments/interfaces/transaction";
 import {Armoney} from "@/database/models/payments/armoney";
+import {Cryptomus} from "@/database/models/payments/cryptomus";
 
 @Entity({ name: 'transactions' })
 export class Transaction {
@@ -33,6 +34,9 @@ export class Transaction {
 
     @ManyToOne(() => Armoney, { nullable: true })
     armoney: Armoney;
+
+    @ManyToOne(() => Cryptomus, { nullable: true })
+    cryptomus: Cryptomus;
 
     @UpdateDateColumn({ type: 'timestamp' })
     updated_at: Date;

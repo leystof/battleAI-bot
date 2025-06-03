@@ -42,6 +42,9 @@ export class Cryptomus {
     @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2 })
     percentProvider: number;
 
+    @Column({ name: 'extraFeePercent', type: 'decimal', precision: 18, scale: 2, default: 0 })
+    extraFeePercent: number;
+
     @Column({
         type: 'enum',
         enum: ARMoneyTransactionCurrency,

@@ -1,99 +1,91 @@
-import {configRepository, dataSourceDatabase, transactionRepository, userRepository} from "@/database";
-import {
-    ARMoneyAppealState,
-    ARMoneyCallbackInvoice,
-    ARMoneyToTransactionAppealReason,
-    ARMoneyToTransactionStatus,
-    ARMoneyInvoiceStatus,
-    ARMoneyToTransactionAppealState
-} from "@/services/payments/ARMoney/interfaces";
-import { alertBot, bot } from "@/utils/bot";
-import { getPercent } from "@/helpers/getPercent";
-import { getUsername } from "@/helpers/getUsername";
+import {configRepository, dataSourceDatabase} from "@/database";
+import {alertBot, bot} from "@/utils/bot";
 import {User} from "@/database/models/user/user";
-import {Armoney} from "@/database/models/payments/armoney";
-import {TransactionStatus} from "@/database/models/payments/interfaces/transaction";
+import {CryptomusCallbackPayload} from "@/services/payments/cryptomus/interfaces";
+import {Cryptomus} from "@/database/models/payments/cryptomus";
+import {CryptomusStatus} from "@/database/models/payments/interfaces/cryptomus";
+import {getPercent} from "@/helpers/getPercent";
+import {Transaction} from "@/database/models/payments/transaction";
+import {TransactionStatus, TransactionType} from "@/database/models/payments/interfaces/transaction";
+import {getUsername} from "@/helpers/getUsername";
 
-export async function cryptomusCallbackInvoice(data: ARMoneyCallbackInvoice) {
+export async function cryptomusCallbackInvoice(data: CryptomusCallbackPayload) {
     const config = await configRepository.findOne({ where: { id: 1 } });
 
     await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {
-        const tx = await manager.findOne(Armoney, {
-            where: { externalId: data.invoice_id },
+        const txCryptomus = await manager.findOne(Cryptomus, {
+            where: { externalId: data.order_id },
             lock: { mode: "pessimistic_write" },
         });
 
         try {
             await alertBot.api.sendMessage(config.channelCallbackId, `
 #ALERT
-#ID_${data.invoice_id}
+#ID_${data?.order_id}
 
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>
 
-<b>📑 TX:</b> <pre>${JSON.stringify(tx)}</pre>
+<b>📑 TX:</b> <pre>${JSON.stringify(txCryptomus)}</pre>
         `, { parse_mode: "HTML" });
         } catch (e) {}
 
-        if (!tx) {
+        if (!txCryptomus) {
             await alertBot.api.sendMessage(config.channelCallbackId, `
 #ERROR
-#ID_${data.invoice_id}
+#ID_${data?.order_id}
 
 Транзакция с invoice_id не найдена | Cryptomus
             `);
             return;
         }
 
-        tx.user = await manager.findOneOrFail(User, { where: { id: tx.userId }, lock: { mode: "pessimistic_write" } });
-        const amount = data.new_amount ?? data.amount;
-        const newAmount = Number(amount) - getPercent(Number(amount), tx.percentProvider);
-        const newStatus = ARMoneyToTransactionStatus[data.state];
+        txCryptomus.user = await manager.findOneOrFail(User, { where: { id: txCryptomus.userId }, lock: { mode: "pessimistic_write" } });
 
-        if (String(data.appeal_state)) {
-            tx.appealState = ARMoneyToTransactionAppealState[data.appeal_state];
-            if (String(data.appeal_reason)) {
-                tx.appealReason = ARMoneyToTransactionAppealReason[data.appeal_reason];
-            }
-        }
+        txCryptomus.status = CryptomusStatus[data.status.toUpperCase()]
 
-        const isSuccess =
-            data.state === ARMoneyInvoiceStatus.PAID ||
-            data.appeal_state === ARMoneyAppealState.USER_SUCCESS;
+        if (
+            (data.status === CryptomusStatus.PAID || data.status === CryptomusStatus.PAID_OVER)
+            && !txCryptomus.processed) {
+            const addBalance = Number(data.merchant_amount) - getPercent(Number(data.payment_amount), txCryptomus.extraFeePercent)
+            txCryptomus.amount = Number(data.payment_amount)
+            txCryptomus.processed = true
+            txCryptomus.user.balance = Number(txCryptomus.user.balance) + addBalance
 
-        if (isSuccess && !tx.processed) {
-            tx.status = ARMoneyToTransactionStatus[TransactionStatus.PAID];
-            tx.user.balance = Number(tx.user.balance) + newAmount;
-            tx.user.wager = Number(tx.user.wager) + newAmount;
-            tx.user.totalDeposit = Number(tx.user.totalDeposit) + newAmount;
-            tx.processed = true;
+            const tx = new Transaction()
+            tx.amount = addBalance
+            tx.type = TransactionType.TOP_UP
+            tx.user = txCryptomus.user
+            tx.cryptomus = txCryptomus
+            tx.status = TransactionStatus.PAID
 
-            await manager.save(tx.user);
+            await manager.save(txCryptomus)
+            await manager.save(tx)
+            await manager.save(txCryptomus.user)
 
             try {
-                await bot.api.sendMessage(tx.user.tgId, `
-#ID_${tx.externalId}
+                await bot.api.sendMessage(txCryptomus.user.tgId, `
+#ID_${txCryptomus.externalId}
 
-<b>💸 Баланс успешно пополнен: ${newAmount} ₽ </b>
+<b>💸 Баланс успешно пополнен: ${addBalance} ${config.currencyName} </b>
                 `, { parse_mode: "HTML" });
 
                 await alertBot.api.sendMessage(config.channelInvoiceId, `
-<code>#ID_${tx.externalId}</code>
+<code>#ID_${txCryptomus.externalId}</code>
 
-<b>🏷 User ID:</b> <code>${tx.user.id}</code>
-<b>💸 Пополнение баланса: ${amount} ₽ | ${newAmount} ₽ | ${tx.percentProvider}%</b>
-<b>🙍‍♂️ Пользователь: ${await getUsername(tx.user)}</b>
+<b>🏷 User ID:</b> <code>${txCryptomus.user.id}</code>
+<b>💸 Пополнение баланса:\n ${data.payment_amount} USDT | ${data.merchant_amount} USDT | ${addBalance} ${config.currencyName} | ${txCryptomus.percentProvider}% | ${txCryptomus.extraFeePercent}%</b>
+<b>🙍‍♂️ Пользователь: ${await getUsername(txCryptomus.user)}</b>
                 `, { parse_mode: "HTML" });
             } catch (e) {
                 console.log("Ошибка отправки уведомления:", e);
             }
         }
 
-        tx.status = newStatus;
-        await manager.save(tx);
+
     }).catch(async (e) => {
         await alertBot.api.sendMessage(config.channelCallbackId, `
-#ERROR
-#ID_${data.invoice_id}
+#ERROR Cryptomus
+#ID_${data?.order_id}
 
 <b>🦴 ERROR:</b> ${e.toString()}
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>

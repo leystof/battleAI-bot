@@ -1,6 +1,7 @@
 export enum CryptomusStatus {
     CONFIRM_CHECK = "confirm_check",
     PAID = "paid",
+    EXPIRED = "expired",
     PAID_OVER = "paid_over",
     FAIL = "fail",
     WRONG_AMOUNT = "wrong_amount",

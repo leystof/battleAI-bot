@@ -5,6 +5,8 @@ import express = require('express');
 import { Request, Response } from 'express';
 import { callbackInvoiceARMoney } from "@/services/payments/ARMoney/callbackInvoice";
 import { ARMoneyCallbackInvoice } from "@/services/payments/ARMoney/interfaces";
+import {CryptomusCallbackPayload} from "@/services/payments/cryptomus/interfaces";
+import {cryptomusCallbackInvoice} from "@/services/payments/cryptomus/callbackInvoice";
 
 export const startCallbackChecker = () => {
     const app = express();
@@ -22,14 +24,13 @@ export const startCallbackChecker = () => {
         res.status(200).send("OK");
     });
 
-    app.post('/callback/cryptomus/invoice', async (req: Request<any, any, ARMoneyCallbackInvoice>, res: Response) => {
+    app.post('/callback/cryptomus/invoice', async (req: Request<any, any, CryptomusCallbackPayload>, res: Response) => {
         const body = req.body;
-        console.log(body)
-        // try {
-        //     await callbackInvoiceARMoney(body);
-        // } catch (e) {
-        //     console.error('Ошибка в обработке armoney invoice:', e);
-        // }
+        try {
+            await cryptomusCallbackInvoice(body);
+        } catch (e) {
+            console.error('Ошибка в обработке armoney invoice:', e);
+        }
         res.status(200).send("OK");
     });
 

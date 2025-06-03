@@ -1,3 +1,5 @@
+import {CryptomusStatus} from "@/database/models/payments/interfaces/cryptomus";
+
 export interface CryptomusInvoicePayload {
     amount: string;                      // Сумма, например: "10.50"
     currency: string;                    // Валюта, например: "USD"
@@ -43,10 +45,11 @@ export interface CryptomusInvoiceResponse {
 
 export interface CryptomusTestWebhookPayload {
     url_callback?: string;
+    order_id: string;
     network: string;
     currency: string;
     uuid: string;
-    status: "paid" | "cancel" | "expired";
+    status: string;
 }
 
 export interface CryptomusCallbackPayload {
@@ -59,7 +62,7 @@ export interface CryptomusCallbackPayload {
     merchant_amount: string; // Сколько получил мерчант
     commission: string; // Комиссия Cryptomus
     is_final: boolean; // Финальный ли статус
-    status: "paid" | "cancel" | "expired"; // Статус транзакции
+    status: CryptomusStatus // Статус транзакции
     from: string; // Адрес плательщика или ID
     wallet_address_uuid: string | null; // UUID кошелька (если был сгенерирован Cryptomus)
     network: string; // Сеть блокчейна (BSC, TRX, ETH и т.д.)

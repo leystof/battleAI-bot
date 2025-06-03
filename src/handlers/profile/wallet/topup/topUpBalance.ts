@@ -24,7 +24,7 @@ const keyb = (ctx: Context, currency: "rub" | "crypto") => {
     }
 
     if (currency === 'crypto') {
-        keyb.text("7 $", "wallet topup provider crypto 7").row()
+        keyb.text("4 $", "wallet topup provider crypto 4").row()
         keyb.text("15 $", "wallet topup provider crypto 15").row()
         keyb.text("70 $", "wallet topup provider crypto 70").row()
         keyb.text("100 $", "wallet topup provider crypto 100").row()

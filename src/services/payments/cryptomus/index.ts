@@ -11,12 +11,12 @@ export class CryptomusApi {
     private client: AxiosInstance;
     private apiKey: string;
     private shopId: string;
-    private domain: string;
+    private callbackInvoiceUrl: string;
 
     constructor(apiKey: string, shopId: string, domain: string) {
         this.apiKey = apiKey;
         this.shopId = shopId;
-        this.domain = domain;
+        this.callbackInvoiceUrl = domain;
 
         this.client = axios.create({
             baseURL: "https://api.cryptomus.com",
@@ -43,7 +43,21 @@ export class CryptomusApi {
 
     async createInvoice(data: CryptomusInvoicePayload): Promise<CryptomusInvoiceResponse> {
         try {
-            const res = await this.client.post("/v1/payment", data);
+            const res = await this.client.post("/v1/payment", {
+                ...data,
+                url_callback: this.callbackInvoiceUrl
+            });
+            return res.data?.["result"];
+        } catch (e: any) {
+            const msg = JSON.stringify(e?.response?.data) || e.message || "Unknown error";
+            console.error("[Cryptomus] createInvoice error:", msg);
+            throw new Error(msg);
+        }
+    }
+
+    async getPayment(data: {uuid?: string, order_id?: string}): Promise<CryptomusInvoiceResponse> {
+        try {
+            const res = await this.client.post("/v1/payment/info", data);
             return res.data?.["result"];
         } catch (e: any) {
             const msg = JSON.stringify(e?.response?.data) || e.message || "Unknown error";
@@ -56,7 +70,7 @@ export class CryptomusApi {
         try {
             const res = await this.client.post("/v1/test-webhook/payment", {
                 ...data,
-                url_callback: this.domain
+                url_callback: this.callbackInvoiceUrl
             });
 
             return res.data;

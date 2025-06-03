@@ -29,7 +29,7 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
         try {
             await alertBot.api.sendMessage(config.channelCallbackId, `
 #ALERT
-#ID_${data.invoice_id}
+#ID_${data?.invoice_id}
 
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>
 
@@ -39,8 +39,8 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
 
         if (!armoneyTx) {
             await alertBot.api.sendMessage(config.channelCallbackId, `
-#ERROR
-#ID_${data.invoice_id}
+#ERROR | ARMoney
+#ID_${data?.invoice_id}
 
 Транзакция с invoice_id не найдена | ARMoney
             `);

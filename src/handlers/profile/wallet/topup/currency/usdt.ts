@@ -42,7 +42,6 @@ export async function preInvoiceUsdt(ctx: Context) {
 
 export async function createInvoiceUsdt(ctx: Context) {
     const configDb = await getCachedConfig()
-    console.log(123)
     const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentUsdtProvider}})
 
     const amount = Number(ctx.match[2])
@@ -87,6 +86,7 @@ export async function createInvoiceUsdt(ctx: Context) {
     newTx.userId = ctx.user.id
     newTx.amount = Number(amount)
     newTx.percentProvider = tier.percent
+    newTx.extraFeePercent = tier.extraPercent
     newTx.type = TransactionType.TOP_UP
     newTx.status = CryptomusStatus.CONFIRM_CHECK
     newTx.currency = ARMoneyTransactionCurrency.USDT

@@ -38,11 +38,17 @@ const keyb = (ctx: Context) => {
 export async function profileMenu(ctx) {
     try {
         await cryptomus.testCallback({
-            uuid: "77e0eff6-8208-4791-bd4a-e43bdccc8f1e",
+            order_id: "3be3b443-9971-44c4-8218-75de81f8750a",
+            uuid: "3be3b443-9971-44c4-8218-75de81f8750a",
             status: "paid",
             currency: "USDT",
             network: "BSC",
         })
+        // const  a = await cryptomus.getPayment({
+        //     order_id: "3be3b443-9971-44c4-8218-75de81f8750a",
+        //     // uuid: "3be3b443-9971-44c4-8218-75de81f8750a",
+        // })
+        // console.log(a)
     }catch (e) {
         console.log(e)
     }

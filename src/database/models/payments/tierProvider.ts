@@ -26,4 +26,7 @@ export class TierProvider {
 
     @Column({ name: 'percent', type: 'decimal', precision: 5, scale: 2 })
     percent: number;
+
+    @Column({ name: 'extraPercent', type: 'decimal', default: 0, precision: 5, scale: 2 })
+    extraPercent: number;
 }
