@@ -1,5 +1,4 @@
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
-import {ProviderTierType} from "@/database/models/TierProvider";
 
 export enum ProviderName {
     ARMONEY = "armoney",

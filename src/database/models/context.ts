@@ -1,5 +1,5 @@
 import { Context as DefaultContext, SessionFlavor } from 'grammy'
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 import {ScenesFlavor, ScenesSessionFlavor} from "grammy-scenes";
 
 type SessionData = ScenesSessionFlavor & {

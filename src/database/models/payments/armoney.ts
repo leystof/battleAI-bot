@@ -1,16 +1,14 @@
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 import {
-    TransactionAppealReason, TransactionAppealState,
-    TransactionCurrency,
-    TransactionSource,
-    TransactionStatus,
-    TransactionType
-} from "@/database/models/interfaces/transaction";
-import {PaymentProvider} from "@/database/models/paymentProvider";
+    ARMoneyTransactionAppealReason, ARMoneyTransactionAppealState,
+    ARMoneyTransactionCurrency,
+    ARMoneyTransactionStatus,
+} from "@/database/models/payments/interfaces/armoney";
+import {TransactionType} from "@/database/models/payments/interfaces/transaction";
 
-@Entity({ name: 'transactions' })
-export class Transaction {
+@Entity({ name: 'armoney_payments' })
+export class Armoney {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -32,40 +30,37 @@ export class Transaction {
 
     @Column({
         type: 'enum',
-        enum: TransactionStatus,
-        default: TransactionStatus.CREATE
+        enum: ARMoneyTransactionStatus,
+        default: ARMoneyTransactionStatus.CREATE
     })
-    status: TransactionStatus
+    status: ARMoneyTransactionStatus
 
-    @Column({ name: 'amount', type: "int", nullable: false })
+    @Column({ name: 'amount', type: 'decimal', precision: 18, scale: 2, nullable: false })
     amount: number
 
-    @Column({ name: 'percent', type: 'decimal', precision: 5, scale: 2 })
+    @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2 })
     percentProvider: number;
 
     @Column({
         type: 'enum',
-        enum: TransactionCurrency,
+        enum: ARMoneyTransactionCurrency,
         nullable: false
     })
-    currency: TransactionCurrency
-
-    @ManyToOne(() => PaymentProvider, { nullable: true })
-    source: PaymentProvider;
+    currency: ARMoneyTransactionCurrency
 
     @Column({
         type: 'enum',
-        enum: TransactionAppealState,
+        enum: ARMoneyTransactionAppealState,
         default: null
     })
-    appealState: TransactionAppealState
+    appealState: ARMoneyTransactionAppealState
 
     @Column({
         type: 'enum',
-        enum: TransactionAppealReason,
+        enum: ARMoneyTransactionAppealReason,
         default: null
     })
-    appealReason: TransactionAppealReason
+    appealReason: ARMoneyTransactionAppealReason
 
     @Column({ name: 'operationId', type: "varchar", nullable: true })
     operationId: string

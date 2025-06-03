@@ -1,6 +1,5 @@
 import {Composer, InlineKeyboard, Keyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {UserStatus} from "@/database/models/user";
 
 export const composer = new Composer<Context>()
 composer.callbackQuery('game help', start)

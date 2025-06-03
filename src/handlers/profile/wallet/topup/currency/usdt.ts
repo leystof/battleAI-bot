@@ -1,14 +1,17 @@
 import {Context} from "@/database/models/context";
 import {getCachedConfig} from "@/modules/cache/config";
-import {tierProviderRepository, transactionRepository} from "@/database";
+import {cryptomusRepository, tierProviderRepository, transactionRepository} from "@/database";
 import {getPercent} from "@/helpers/getPercent";
-import {TransactionCurrency, TransactionStatus, TransactionType} from "@/database/models/interfaces/transaction";
+import {ARMoneyTransactionCurrency, ARMoneyTransactionStatus} from "@/database/models/payments/interfaces/armoney";
 import { v4 as uuidv4 } from 'uuid';
 import {alertBot} from "@/utils/bot";
 import {getUsername} from "@/helpers/getUsername";
-import {Transaction} from "@/database/models/transaction";
+import {Transaction} from "@/database/models/payments/transaction";
 import {cryptomus} from "@/services/payments/cryptomus";
 import {CryptomusInvoicePayload, CryptomusInvoiceResponse} from "@/services/payments/cryptomus/interfaces";
+import {TransactionStatus, TransactionType} from "@/database/models/payments/interfaces/transaction";
+import {Cryptomus} from "@/database/models/payments/cryptomus";
+import {CryptomusStatus} from "@/database/models/payments/interfaces/cryptomus";
 
 export async function preInvoiceUsdt(ctx: Context) {
     const provider = ctx.match[1]
@@ -39,7 +42,7 @@ export async function preInvoiceUsdt(ctx: Context) {
 
 export async function createInvoiceUsdt(ctx: Context) {
     const configDb = await getCachedConfig()
-
+    console.log(123)
     const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentUsdtProvider}})
 
     const amount = Number(ctx.match[2])
@@ -78,18 +81,17 @@ export async function createInvoiceUsdt(ctx: Context) {
 
 
 
-    const newTx = new Transaction()
+    const newTx = new Cryptomus()
     newTx.externalId = operationId
     newTx.user = ctx.user
     newTx.userId = ctx.user.id
     newTx.amount = Number(amount)
     newTx.percentProvider = tier.percent
     newTx.type = TransactionType.TOP_UP
-    newTx.status = TransactionStatus.CREATE
-    newTx.source = configDb.paymentUsdtProvider
-    newTx.currency = TransactionCurrency.USDT
+    newTx.status = CryptomusStatus.CONFIRM_CHECK
+    newTx.currency = ARMoneyTransactionCurrency.USDT
 
-    await transactionRepository.save(newTx)
+    await cryptomusRepository.save(newTx)
     return ctx.editMessageText(`
 🏷 ID: ${newTx.externalId}
 

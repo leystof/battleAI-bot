@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 
 export enum MatchType {
     PROMPT = "prompt",

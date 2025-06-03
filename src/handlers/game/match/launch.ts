@@ -1,7 +1,7 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
 import {pool} from "@/modules/pool/instance";
-import {MatchType} from "@/database/models/match";
+import {MatchType} from "@/database/models/game/match";
 import {createImagePromptGame} from "@/handlers/game/match/prompt/createGame";
 
 export const composer = new Composer<Context>()

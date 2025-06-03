@@ -22,6 +22,17 @@ export const startCallbackChecker = () => {
         res.status(200).send("OK");
     });
 
+    app.post('/callback/cryptomus/invoice', async (req: Request<any, any, ARMoneyCallbackInvoice>, res: Response) => {
+        const body = req.body;
+        console.log(body)
+        // try {
+        //     await callbackInvoiceARMoney(body);
+        // } catch (e) {
+        //     console.error('Ошибка в обработке armoney invoice:', e);
+        // }
+        res.status(200).send("OK");
+    });
+
     app.listen(PORT, () => {
         console.log(`🚀 Express running on http://localhost:${PORT}`);
     });

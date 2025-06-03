@@ -1,27 +1,27 @@
-import {configRepository, dataSourceDatabase, transactionRepository, userRepository} from "@/database";
+import {configRepository, dataSourceDatabase} from "@/database";
 import {
     ARMoneyAppealState,
     ARMoneyCallbackInvoice,
-    ARMoneyToTransactionAppealReason,
-    ARMoneyToTransactionStatus,
     ARMoneyInvoiceStatus,
-    ARMoneyToTransactionAppealState
+    ARMoneyToTransactionAppealReason,
+    ARMoneyToTransactionAppealState,
+    ARMoneyToTransactionStatus
 } from "@/services/payments/ARMoney/interfaces";
-import {
-    TransactionStatus,
-    TransactionAppealState
-} from "@/database/models/interfaces/transaction";
-import { alertBot, bot } from "@/utils/bot";
-import { getPercent } from "@/helpers/getPercent";
-import { getUsername } from "@/helpers/getUsername";
-import {Transaction} from "@/database/models/transaction";
-import {User} from "@/database/models/user";
+import {ARMoneyTransactionStatus} from "@/database/models/payments/interfaces/armoney";
+import {alertBot, bot} from "@/utils/bot";
+import {getPercent} from "@/helpers/getPercent";
+import {getUsername} from "@/helpers/getUsername";
+import {Transaction} from "@/database/models/payments/transaction";
+import {User} from "@/database/models/user/user";
+import {Armoney} from "@/database/models/payments/armoney";
+import {rubToUsdt} from "@/helpers/payments/rubToUsdt";
+import {TransactionStatus, TransactionType} from "@/database/models/payments/interfaces/transaction";
+import {Decimal128} from "typeorm";
 
 export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
     const config = await configRepository.findOne({ where: { id: 1 } });
-
     await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {
-        const tx = await manager.findOne(Transaction, {
+        const armoneyTx = await manager.findOne(Armoney, {
             where: { externalId: data.invoice_id },
             lock: { mode: "pessimistic_write" },
         });
@@ -33,29 +33,30 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
 
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>
 
-<b>📑 TX:</b> <pre>${JSON.stringify(tx)}</pre>
+<b>📑 armoneyTx:</b> <pre>${JSON.stringify(armoneyTx)}</pre>
         `, { parse_mode: "HTML" });
         } catch (e) {}
 
-        if (!tx) {
+        if (!armoneyTx) {
             await alertBot.api.sendMessage(config.channelCallbackId, `
 #ERROR
 #ID_${data.invoice_id}
 
-Транзакция с invoice_id не найдена
+Транзакция с invoice_id не найдена | ARMoney
             `);
             return;
         }
 
-        tx.user = await manager.findOneOrFail(User, { where: { id: tx.userId }, lock: { mode: "pessimistic_write" } });
+        armoneyTx.user = await manager.findOneOrFail(User, { where: { id: armoneyTx.userId }, lock: { mode: "pessimistic_write" } });
         const amount = data.new_amount ?? data.amount;
-        const newAmount = Number(amount) - getPercent(Number(amount), tx.percentProvider);
+        const preNewAmount = Number(amount) - getPercent(Number(amount), armoneyTx.percentProvider);
+        const newAmount = await rubToUsdt(preNewAmount, {fee: 3,source: "armoney"})
         const newStatus = ARMoneyToTransactionStatus[data.state];
 
         if (String(data.appeal_state)) {
-            tx.appealState = ARMoneyToTransactionAppealState[data.appeal_state];
+            armoneyTx.appealState = ARMoneyToTransactionAppealState[data.appeal_state];
             if (String(data.appeal_reason)) {
-                tx.appealReason = ARMoneyToTransactionAppealReason[data.appeal_reason];
+                armoneyTx.appealReason = ARMoneyToTransactionAppealReason[data.appeal_reason];
             }
         }
 
@@ -63,40 +64,48 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
             data.state === ARMoneyInvoiceStatus.PAID ||
             data.appeal_state === ARMoneyAppealState.USER_SUCCESS;
 
-        if (isSuccess && !tx.processed) {
-            tx.status = TransactionStatus.PAID;
-            tx.user.balance = Number(tx.user.balance) + newAmount;
-            tx.user.wager = Number(tx.user.wager) + newAmount;
-            tx.user.totalDeposit = Number(tx.user.totalDeposit) + newAmount;
-            tx.processed = true;
-
-            await manager.save(tx.user);
+        if (isSuccess && !armoneyTx.processed) {
+            armoneyTx.status = ARMoneyTransactionStatus.PAID;
+            armoneyTx.user.balance = Number(armoneyTx.user.balance) + newAmount;
+            armoneyTx.user.wager = Number(armoneyTx.user.wager) + newAmount;
+            armoneyTx.user.totalDeposit = Number(armoneyTx.user.totalDeposit) + newAmount;
+            armoneyTx.amount = Number(amount);
+            armoneyTx.processed = true;
+            
+            const tx = new Transaction()
+            tx.amount = newAmount
+            tx.user = armoneyTx.user
+            tx.status = TransactionStatus.PAID
+            tx.type = TransactionType.TOP_UP
+            tx.armoney = armoneyTx
+            await manager.save(tx);
+            await manager.save(armoneyTx.user);
 
             try {
-                await bot.api.sendMessage(tx.user.tgId, `
-#ID_${tx.externalId}
+                await bot.api.sendMessage(armoneyTx.user.tgId, `
+#ID_${armoneyTx.externalId}
 
-<b>💸 Баланс успешно пополнен: ${newAmount} ₽ </b>
+<b>💸 Баланс успешно пополнен: ${newAmount} ${config.currencyName} </b>
                 `, { parse_mode: "HTML" });
 
                 await alertBot.api.sendMessage(config.channelInvoiceId, `
-<code>#ID_${tx.externalId}</code>
+<code>#ID_${armoneyTx.externalId}</code>
 
-<b>🏷 User ID:</b> <code>${tx.user.id}</code>
-<b>💸 Пополнение баланса: ${amount} ₽ | ${newAmount} ₽ | ${tx.percentProvider}%</b>
-<b>🙍‍♂️ Пользователь: ${await getUsername(tx.user)}</b>
+<b>🏷 User ID:</b> <code>${armoneyTx.user.id}</code>
+<b>💸 Пополнение баланса:\n ${amount} ₽ | ${preNewAmount} ₽ | ${newAmount} ${config.currencyName} | ${armoneyTx.percentProvider}%</b>
+<b>🙍‍♂️ Пользователь: ${await getUsername(armoneyTx.user)}</b>
                 `, { parse_mode: "HTML" });
             } catch (e) {
                 console.log("Ошибка отправки уведомления:", e);
             }
         }
 
-        tx.status = newStatus;
-        await manager.save(tx);
+        armoneyTx.status = newStatus;
+        await manager.save(armoneyTx);
     }).catch(async (e) => {
         await alertBot.api.sendMessage(config.channelCallbackId, `
-#ERROR
-#ID_${data.invoice_id}
+#ERROR | ARMoney
+#ID_${data?.invoice_id}
 
 <b>🦴 ERROR:</b> ${e.toString()}
 <b>🦻 CALLBACK:</b> <pre>${JSON.stringify(data)}</pre>

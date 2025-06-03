@@ -1,5 +1,5 @@
 import { Mutex } from 'async-mutex'
-import {MatchType} from "@/database/models/match";
+import {MatchType} from "@/database/models/game/match";
 import {bot} from "@/utils/bot";
 import {log} from "@/utils/logger";
 

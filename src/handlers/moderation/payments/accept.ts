@@ -1,10 +1,11 @@
 import {Composer} from "grammy";
 import {Context} from "@/database/models/context";
 import {dataSourceDatabase} from "@/database";
-import {TransactionStatus} from "@/database/models/interfaces/transaction";
-import {Transaction} from "@/database/models/transaction";
+import {ARMoneyTransactionStatus} from "@/database/models/payments/interfaces/armoney";
+import {Transaction} from "@/database/models/payments/transaction";
 import {getCachedConfig} from "@/modules/cache/config";
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
+import {Armoney} from "@/database/models/payments/armoney";
 
 
 export const composer = new Composer<Context>()
@@ -12,10 +13,10 @@ composer.callbackQuery(/^payout accept (.+)$/, start)
 
 async function start(ctx: Context) {
     let errorMessage: string | undefined = undefined;
-    let transaction: Transaction = undefined
+    let transaction: Armoney = undefined
 
     await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {
-        const tx = await manager.findOne(Transaction, {
+        const tx = await manager.findOne(Armoney, {
             where: {externalId: ctx.match[1]},
             lock: {mode: "pessimistic_write"},
         });
@@ -30,7 +31,7 @@ async function start(ctx: Context) {
         tx.user = await manager.findOneOrFail(User, { where: { id: tx.userId }, lock: { mode: "pessimistic_write" } });
         transaction = tx
 
-        if (tx.status === TransactionStatus.PAID) {
+        if (tx.status === ARMoneyTransactionStatus.PAID) {
             errorMessage = "paid"
             return ctx.answerCallbackQuery({
                 show_alert: true,
@@ -38,7 +39,7 @@ async function start(ctx: Context) {
             })
         }
 
-        if (tx.status === TransactionStatus.USER_CANCELLED) {
+        if (tx.status === ARMoneyTransactionStatus.USER_CANCELLED) {
             errorMessage = "cancelUser"
             return ctx.answerCallbackQuery({
                 show_alert: true,
@@ -47,7 +48,7 @@ async function start(ctx: Context) {
         }
 
         tx.user.reservedBalance = Number(tx.user.reservedBalance) - Number(tx.amount)
-        tx.status = TransactionStatus.PAID
+        tx.status = ARMoneyTransactionStatus.PAID
         await manager.save(tx)
         await manager.save(tx.user)
     })

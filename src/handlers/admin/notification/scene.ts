@@ -4,7 +4,7 @@ import {Scene} from "grammy-scenes";
 import {parseButtons} from "@/helpers/parseButtons";
 import {userRepository} from "@/database";
 import {Not} from "typeorm";
-import {UserStatus} from "@/database/models/user";
+import {UserStatus} from "@/database/models/user/user";
 
 export const composer = new Composer<Context>()
 composer.callbackQuery(/^admin notifications$/, start)

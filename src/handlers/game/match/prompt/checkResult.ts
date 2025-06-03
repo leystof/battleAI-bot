@@ -6,7 +6,7 @@ import {
 import fetch from "node-fetch";
 
 import {getPercent} from "@/helpers/getPercent";
-import {MatchStatus} from "@/database/models/match";
+import {MatchStatus} from "@/database/models/game/match";
 import {pool} from "@/modules/pool/instance";
 import {AI} from "@/services/openai";
 import {log} from "@/utils/logger";

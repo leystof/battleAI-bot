@@ -1,7 +1,7 @@
 import {NextFunction} from 'grammy'
 import {Context} from "@/database/models/context";
 import {getCachedConfig} from "@/modules/cache/config";
-import {UserStatus} from "@/database/models/user";
+import {UserStatus} from "@/database/models/user/user";
 
 export const chatMiddleware = async (ctx: Context, next: NextFunction) => {
     if (!ctx.chat) return;

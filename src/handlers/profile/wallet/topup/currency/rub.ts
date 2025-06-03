@@ -1,16 +1,21 @@
 import {Context} from "@/database/models/context";
 import {getCachedConfig} from "@/modules/cache/config";
-import {tierProviderRepository, transactionRepository} from "@/database";
+import {armoneyRepository, tierProviderRepository, transactionRepository} from "@/database";
 import {getPercent} from "@/helpers/getPercent";
 import {rubToUsdt} from "@/helpers/payments/rubToUsdt";
-import {TransactionCurrency, TransactionStatus, TransactionType} from "@/database/models/interfaces/transaction";
+import {
+    ARMoneyTransactionCurrency,
+    ARMoneyTransactionStatus,
+} from "@/database/models/payments/interfaces/armoney";
 import {MoreThan} from "typeorm";
 import {v4 as uuidv4} from "uuid";
 import {arMoney} from "@/services/payments/ARMoney";
 import {alertBot} from "@/utils/bot";
 import {getUsername} from "@/helpers/getUsername";
-import {Transaction} from "@/database/models/transaction";
+import {Transaction} from "@/database/models/payments/transaction";
 import {config} from "@/utils/config";
+import {TransactionType} from "@/database/models/payments/interfaces/transaction";
+import {Armoney} from "@/database/models/payments/armoney";
 
 export async function preInvoiceRub(ctx: Context) {
     const provider = ctx.match[1]
@@ -43,14 +48,13 @@ export async function createInvoiceRub(ctx: Context) {
     const configDb = await getCachedConfig()
     const amount = Number(ctx.match[2])
 
-    const tx = await transactionRepository.findOne({
+    const tx = await armoneyRepository.findOne({
         where: {
             user: {
                 id: ctx.user.id
             },
             type: TransactionType.TOP_UP,
-            status: TransactionStatus.CREATE,
-            source: configDb.paymentRubProvider,
+            status: ARMoneyTransactionStatus.CREATE,
             created_at: MoreThan(new Date(Date.now() - 60 * 60 * 1000)) // 1 hour
         }, relations: ["user"]
     })
@@ -103,19 +107,18 @@ export async function createInvoiceRub(ctx: Context) {
 
 
 
-    const newTx = new Transaction()
+    const newTx = new Armoney()
     newTx.externalId = createInvoice["id"]
     newTx.user = ctx.user
     newTx.userId = ctx.user.id
     newTx.amount = Number(createInvoice["amount"])
     newTx.percentProvider = tier.percent
     newTx.type = TransactionType.TOP_UP
-    newTx.status = TransactionStatus.CREATE
-    newTx.source = configDb.paymentRubProvider
-    newTx.currency = TransactionCurrency.RUB
+    newTx.status = ARMoneyTransactionStatus.CREATE
+    newTx.currency = ARMoneyTransactionCurrency.RUB
     newTx.operationId = operationId
 
-    await transactionRepository.save(newTx)
+    await armoneyRepository.save(newTx)
     return ctx.editMessageText(`
 🏷 ID: ${newTx.externalId}
 

@@ -85,13 +85,22 @@ export class ARMoney {
         }
     }
 
-    async setCallback(data: string) {
+    async testPaid(externalId: string) {
         try {
-            const res = await this.client.put(`/api/v1/s2s/payout/shop/${this.shopId}/callback_url/`, {
-                callback_url: data,
-            });
-
-            return res.data;
+            await fetch("http://localhost:8888/callback/armoney/invoice", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    'invoice_id': externalId,
+                    'state': 4,
+                    'new_amount': null,
+                    'amount': "1000",
+                    'appeal_state': 1,
+                    'appeal_reason': ""
+                })
+            })
         } catch (e) {
             return {
                 error: e.toString()

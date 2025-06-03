@@ -1,6 +1,6 @@
 import {NextFunction} from 'grammy'
 import {log} from "@/utils/logger";
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 import {userRepository} from "@/database";
 import {firstStart} from "@/handlers/other/start";
 

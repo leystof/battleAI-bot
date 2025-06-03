@@ -1,12 +1,12 @@
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {PaymentProvider} from "@/database/models/paymentProvider";
+import {PaymentProvider} from "@/database/models/payments/paymentProvider";
 
 export enum ProviderTierType {
     TOPUP = "topup",
     WITHDRAW = "withdraw",
 }
 
-@Entity({ name: 'tiers_provider' })
+@Entity({ name: 'tiers_providers' })
 export class TierProvider {
     @PrimaryGeneratedColumn()
     id: number;

@@ -2,18 +2,20 @@ import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
 import {Scene} from "grammy-scenes";
 import {
+    armoneyRepository,
     configRepository,
     transactionRepository,
     userRepository
 } from "@/database";
-import {Transaction} from "@/database/models/transaction";
+import {Transaction} from "@/database/models/payments/transaction";
 import {
-    TransactionCurrency,
-    TransactionStatus,
-    TransactionType
-} from "@/database/models/interfaces/transaction";
+    ARMoneyTransactionCurrency,
+    ARMoneyTransactionStatus,
+} from "@/database/models/payments/interfaces/armoney";
 import { v4 as uuidv4 } from 'uuid';
 import {getUsername} from "@/helpers/getUsername";
+import {Armoney} from "@/database/models/payments/armoney";
+import {TransactionStatus, TransactionType} from "@/database/models/payments/interfaces/transaction";
 export const composer = new Composer<Context>()
 composer.callbackQuery('wallet withdraw', withdraw)
 
@@ -143,18 +145,17 @@ scene.wait().hears(/.+/, async (ctx: Context) => {
 
     const config = await configRepository.findOne({where: {id: 1},relations: ["withdrawRubProvider"]})
 
-    const newTx = new Transaction()
+    const newTx = new Armoney()
     newTx.externalId = uuidv4();
     newTx.user = ctx.user
     newTx.userId = ctx.user.id
     newTx.amount = ctx.session.amount
     newTx.percentProvider = 0
     newTx.type = TransactionType.WITHDRAW
-    newTx.status = TransactionStatus.CREATE
-    newTx.source = config.withdrawRubProvider
-    newTx.currency = TransactionCurrency.RUB
+    newTx.status = ARMoneyTransactionStatus.CREATE
+    newTx.currency = ARMoneyTransactionCurrency.RUB
 
-    await transactionRepository.save(newTx)
+    await armoneyRepository.save(newTx)
 
     try {
         await ctx.api.sendMessage(config.channelPayOutId, `
@@ -162,7 +163,7 @@ scene.wait().hears(/.+/, async (ctx: Context) => {
 
 <b>Сумма:</b> <code>${ctx.session.amount}</code> ₽
 <b>Номер карты:</b> <code>${ctx.message.text}</code>
-<b>Провайдер:</b> ${newTx.source.name}
+<b>Провайдер:</b> ARMoney
 
 <b>Пользователь:</b> ${await getUsername(ctx.user)}
 <b>ID:</b> ${ctx.user.id}

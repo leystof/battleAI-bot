@@ -42,6 +42,7 @@ async function chooseAmount(ctx) {
 
 async function createInvoice(ctx: Context) {
     const provider = ctx.match[1]
+    console.log(provider)
     if (provider === "rub") {
         return createInvoiceRub(ctx)
     }

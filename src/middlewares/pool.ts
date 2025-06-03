@@ -2,7 +2,7 @@ import {InlineKeyboard, NextFunction} from 'grammy'
 import {matchRepository} from "@/database";
 import {pool} from "@/modules/pool/instance";
 import {Context} from "@/database/models/context";
-import {MatchStatus} from "@/database/models/match";
+import {MatchStatus} from "@/database/models/game/match";
 import {setMatchPrompt} from "@/handlers/game/match/prompt/setPrompt";
 
 export const poolMiddleware = async (ctx: Context, next: NextFunction) => {

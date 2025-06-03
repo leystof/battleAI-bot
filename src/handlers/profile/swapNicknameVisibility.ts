@@ -1,6 +1,6 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {UserStatus} from "@/database/models/user";
+import {UserStatus} from "@/database/models/user/user";
 import {userRepository} from "@/database";
 import {profileMenu, profileMenuCallback} from "@/handlers/profile/menu";
 

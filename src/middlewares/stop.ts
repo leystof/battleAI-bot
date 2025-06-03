@@ -1,7 +1,6 @@
 import {NextFunction} from 'grammy'
 import {Context} from "@/database/models/context";
 import {getCachedConfig} from "@/modules/cache/config";
-import {UserStatus} from "@/database/models/user";
 
 export const stopMiddleware = async (ctx: Context, next: NextFunction) => {
     const config = await getCachedConfig()

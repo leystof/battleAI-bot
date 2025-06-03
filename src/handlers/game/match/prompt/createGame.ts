@@ -1,6 +1,6 @@
 import {Context} from "@/database/models/context";
 import {Player} from "@/modules/pool/pool";
-import {Match, MatchStatus} from "@/database/models/match";
+import {Match, MatchStatus} from "@/database/models/game/match";
 import {configRepository, matchRepository, userRepository} from "@/database";
 import {generateImage} from "@/services/falai/generateImg";
 import {generateImagePrompt} from "@/services/openai/generateImagePrompt";
@@ -9,7 +9,7 @@ import fetch from "node-fetch";
 import {sendMsgPhotoToUser, sendMsgToUser} from "@/handlers/game/match/helpers/message";
 import {checkResultPrompt} from "@/handlers/game/match/prompt/checkResult";
 import {setMatchTimer} from "@/modules/timer/match";
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 import {getPercent} from "@/helpers/getPercent";
 import {getUsername} from "@/helpers/getUsername";
 

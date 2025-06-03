@@ -1,15 +1,4 @@
-export enum TransactionType {
-    TOP_UP = "top_up",
-    WITHDRAW = "withdraw",
-}
-
-export enum TransactionSource {
-    ARMONEY = "armoney",
-    CUSTOM = "custom",
-    CRYPTOMUS = "cryptomus",
-}
-
-export enum TransactionStatus {
+export enum ARMoneyTransactionStatus {
     CREATE = "CREATE",
 
     QUEUE_FOR_WITHDRAW = "QUEUE_FOR_WITHDRAW",
@@ -30,20 +19,20 @@ export enum TransactionStatus {
     RESTORED = "RESTORED",
 }
 
-export enum TransactionCurrency {
+export enum ARMoneyTransactionCurrency {
     RUB = "rub",
     USD = "usd",
     USDT = "usdt",
 }
 
-export enum TransactionAppealState {
+export enum ARMoneyTransactionAppealState {
     NOT_SET = "NOT_SET",
     APPEALED = "APPEALED",
     USER_SUCCESS = "USER_SUCCESS",
     TRADER_SUCCESS = "TRADER_SUCCESS",
 }
 
-export enum TransactionAppealReason {
+export enum ARMoneyTransactionAppealReason {
     TRADER_NOT_CONFIRM_PAYMENT = "TRADER_NOT_CONFIRM_PAYMENT",
     OVERPAYMENT = "OVERPAYMENT",
     INVOICE_EXPIRED_WITH_PAYMENT = "INVOICE_EXPIRED_WITH_PAYMENT",

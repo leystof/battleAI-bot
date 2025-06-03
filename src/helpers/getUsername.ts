@@ -1,4 +1,4 @@
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
 import {bot} from "@/utils/bot";
 
 export async function getUsername(user: User, isVisibility: boolean = true): Promise<string> {

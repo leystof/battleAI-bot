@@ -25,7 +25,7 @@ export class User {
     })
     status: UserStatus
 
-    @Column({ name: 'balance', type: "bigint", transformer: {
+    @Column({ name: 'balance', type: 'decimal', precision: 18, scale: 2, transformer: {
             to: (value: number) => value,
             from: (value: string | number) => Number(value)
         }, default: 0 })

@@ -40,3 +40,36 @@ export interface CryptomusInvoiceResponse {
     to_currency?: string; // В какую валюту сконвертировано (если указана)
     course?: string; // Курс обмена, если была конвертация
 }
+
+export interface CryptomusTestWebhookPayload {
+    url_callback?: string;
+    network: string;
+    currency: string;
+    uuid: string;
+    status: "paid" | "cancel" | "expired";
+}
+
+export interface CryptomusCallbackPayload {
+    type: string; // Тип уведомления
+    uuid: string; // ID транзакции в Cryptomus
+    order_id: string; // Твой order_id
+    amount: string; // Сумма по счёту
+    payment_amount: string; // Сумма, которую оплатил пользователь
+    payment_amount_usd: string; // Оплачено в USD
+    merchant_amount: string; // Сколько получил мерчант
+    commission: string; // Комиссия Cryptomus
+    is_final: boolean; // Финальный ли статус
+    status: "paid" | "cancel" | "expired"; // Статус транзакции
+    from: string; // Адрес плательщика или ID
+    wallet_address_uuid: string | null; // UUID кошелька (если был сгенерирован Cryptomus)
+    network: string; // Сеть блокчейна (BSC, TRX, ETH и т.д.)
+    currency: string; // Валюта на твоей стороне (например, USDT)
+    payer_currency: string; // Валюта пользователя
+    payer_amount: string; // Сколько прислал пользователь
+    payer_amount_exchange_rate: string | null; // Курс обмена
+    additional_data: string | null; // Твои данные (если передавал в счёте)
+    transfer_id: string | null; // Может быть ID перевода (опционально)
+    txid: string; // TXID транзакции в сети
+    sign: string; // Подпись от Cryptomus
+}
+

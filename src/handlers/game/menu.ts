@@ -1,6 +1,6 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {UserStatus} from "@/database/models/user";
+import {UserStatus} from "@/database/models/user/user";
 import {chooseBetPromptMatch} from "@/handlers/game/match/chooseBet";
 
 export const composer = new Composer<Context>()

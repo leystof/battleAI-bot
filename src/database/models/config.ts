@@ -1,5 +1,5 @@
 import {Entity, Column, PrimaryGeneratedColumn, Index, CreateDateColumn, UpdateDateColumn, ManyToOne} from 'typeorm'
-import {PaymentProvider} from "@/database/models/paymentProvider";
+import {PaymentProvider} from "@/database/models/payments/paymentProvider";
 
 @Entity()
 export class Config {

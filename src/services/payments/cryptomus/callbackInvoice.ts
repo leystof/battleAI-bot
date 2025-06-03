@@ -7,21 +7,18 @@ import {
     ARMoneyInvoiceStatus,
     ARMoneyToTransactionAppealState
 } from "@/services/payments/ARMoney/interfaces";
-import {
-    TransactionStatus,
-    TransactionAppealState
-} from "@/database/models/interfaces/transaction";
 import { alertBot, bot } from "@/utils/bot";
 import { getPercent } from "@/helpers/getPercent";
 import { getUsername } from "@/helpers/getUsername";
-import {Transaction} from "@/database/models/transaction";
-import {User} from "@/database/models/user";
+import {User} from "@/database/models/user/user";
+import {Armoney} from "@/database/models/payments/armoney";
+import {TransactionStatus} from "@/database/models/payments/interfaces/transaction";
 
-export async function callbackInvoiceCryptomus(data: ARMoneyCallbackInvoice) {
+export async function cryptomusCallbackInvoice(data: ARMoneyCallbackInvoice) {
     const config = await configRepository.findOne({ where: { id: 1 } });
 
     await dataSourceDatabase.transaction("SERIALIZABLE", async (manager) => {
-        const tx = await manager.findOne(Transaction, {
+        const tx = await manager.findOne(Armoney, {
             where: { externalId: data.invoice_id },
             lock: { mode: "pessimistic_write" },
         });
@@ -42,7 +39,7 @@ export async function callbackInvoiceCryptomus(data: ARMoneyCallbackInvoice) {
 #ERROR
 #ID_${data.invoice_id}
 
-Транзакция с invoice_id не найдена
+Транзакция с invoice_id не найдена | Cryptomus
             `);
             return;
         }
@@ -64,7 +61,7 @@ export async function callbackInvoiceCryptomus(data: ARMoneyCallbackInvoice) {
             data.appeal_state === ARMoneyAppealState.USER_SUCCESS;
 
         if (isSuccess && !tx.processed) {
-            tx.status = TransactionStatus.PAID;
+            tx.status = ARMoneyToTransactionStatus[TransactionStatus.PAID];
             tx.user.balance = Number(tx.user.balance) + newAmount;
             tx.user.wager = Number(tx.user.wager) + newAmount;
             tx.user.totalDeposit = Number(tx.user.totalDeposit) + newAmount;

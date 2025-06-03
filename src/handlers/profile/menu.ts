@@ -1,11 +1,12 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
-import {UserStatus} from "@/database/models/user";
+import {UserStatus} from "@/database/models/user/user";
 import {formatIntWithDot} from "@/helpers/formatIntWithDot";
 import {getWinPercent} from "@/helpers/winPercent";
 import {cryptomus} from "@/services/payments/cryptomus";
 import {Config} from "@/database/models/config";
 import {getCachedConfig} from "@/modules/cache/config";
+import {arMoney} from "@/services/payments/ARMoney";
 
 export const composer = new Composer<Context>()
 composer.hears('👤 Профиль', profileMenu)
@@ -35,6 +36,21 @@ const keyb = (ctx: Context) => {
         // .text("👥 Реферальная программа", "refferal menu")
 }
 export async function profileMenu(ctx) {
+    try {
+        await cryptomus.testCallback({
+            uuid: "77e0eff6-8208-4791-bd4a-e43bdccc8f1e",
+            status: "paid",
+            currency: "USDT",
+            network: "BSC",
+        })
+    }catch (e) {
+        console.log(e)
+    }
+    // try {
+    //     await arMoney.testPaid("bc9fd174-0980-45f6-8c43-3229b6a47f35")
+    // }catch (e) {
+    //     console.log(e)
+    // }
     // try {
     //     const cr = await cryptomus.createInvoice({
     //         amount: "25000",

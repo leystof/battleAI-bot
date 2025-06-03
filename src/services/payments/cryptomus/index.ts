@@ -1,17 +1,22 @@
 import axios, { AxiosInstance } from "axios";
 import crypto from "crypto";
 import { config } from "@/utils/config";
-import {CryptomusInvoicePayload, CryptomusInvoiceResponse} from "@/services/payments/cryptomus/interfaces";
+import {
+    CryptomusInvoicePayload,
+    CryptomusInvoiceResponse,
+    CryptomusTestWebhookPayload
+} from "@/services/payments/cryptomus/interfaces";
 
-type Result<T> = { data: T } | { error: string };
-export class Cryptomus {
+export class CryptomusApi {
     private client: AxiosInstance;
     private apiKey: string;
     private shopId: string;
+    private domain: string;
 
-    constructor(apiKey: string, shopId: string) {
+    constructor(apiKey: string, shopId: string, domain: string) {
         this.apiKey = apiKey;
         this.shopId = shopId;
+        this.domain = domain;
 
         this.client = axios.create({
             baseURL: "https://api.cryptomus.com",
@@ -47,14 +52,26 @@ export class Cryptomus {
         }
     }
 
-    async testCallback(data) {
+    async testCallback(data: CryptomusTestWebhookPayload): Promise<any> {
+        try {
+            const res = await this.client.post("/v1/test-webhook/payment", {
+                ...data,
+                url_callback: this.domain
+            });
 
+            return res.data;
+        } catch (e: any) {
+            const msg = JSON.stringify(e?.response?.data) || e.message || "Unknown error";
+            console.error("[Cryptomus] testCallback error:", msg);
+            throw new Error(msg);
+        }
     }
 
 }
 
 
-export const cryptomus = new Cryptomus(
+export const cryptomus = new CryptomusApi(
     config.cryptomus.apiKey,
     config.cryptomus.shopId,
+    config.domain.url + "/callback/cryptomus/invoice",
 )

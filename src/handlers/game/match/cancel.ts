@@ -1,7 +1,7 @@
 import {Composer, InlineKeyboard} from "grammy";
 import {Context} from "@/database/models/context";
 import {pool} from "@/modules/pool/instance";
-import {MatchType} from "@/database/models/match";
+import {MatchType} from "@/database/models/game/match";
 
 export const composer = new Composer<Context>()
 composer.callbackQuery(/game match cancel/, start)

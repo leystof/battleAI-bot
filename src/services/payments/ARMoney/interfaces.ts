@@ -1,8 +1,7 @@
 import {
-    TransactionAppealReason,
-    TransactionAppealState,
-    TransactionStatus
-} from "@/database/models/interfaces/transaction";
+    ARMoneyTransactionAppealReason,
+    ARMoneyTransactionAppealState, ARMoneyTransactionStatus,
+} from "@/database/models/payments/interfaces/armoney";
 
 export interface ARMoneyInvoicePayload {
     pair: "USDT-RUB";            // Валютная пара (фиксированная)
@@ -66,34 +65,34 @@ export enum ARMoneyInvoiceStatus {
     RESTORED = 8,
 }
 
-export const ARMoneyToTransactionAppealReason: Record<ARMoneyAppealReason, TransactionAppealReason> = {
-    [ARMoneyAppealReason.TRADER_NOT_CONFIRM_PAYMENT]: TransactionAppealReason.TRADER_NOT_CONFIRM_PAYMENT,
-    [ARMoneyAppealReason.OVERPAYMENT]: TransactionAppealReason.OVERPAYMENT,
-    [ARMoneyAppealReason.INVOICE_EXPIRED_WITH_PAYMENT]: TransactionAppealReason.INVOICE_EXPIRED_WITH_PAYMENT,
-    [ARMoneyAppealReason.FRAUD]: TransactionAppealReason.FRAUD,
-    [ARMoneyAppealReason.PAYMENT_NOT_RECEIVED]: TransactionAppealReason.PAYMENT_NOT_RECEIVED,
-    [ARMoneyAppealReason.BUYER_PAID_LESS]: TransactionAppealReason.BUYER_PAID_LESS,
-    [ARMoneyAppealReason.MALICIOUS_ORDER_CANCELLATION]: TransactionAppealReason.MALICIOUS_ORDER_CANCELLATION,
-    [ARMoneyAppealReason.CONFIRMATION_DOCUMENTS]: TransactionAppealReason.CONFIRMATION_DOCUMENTS,
-    [ARMoneyAppealReason.BANK_ACCOUNT_FROZEN]: TransactionAppealReason.BANK_ACCOUNT_FROZEN,
-    [ARMoneyAppealReason.NEW_AMOUNT]: TransactionAppealReason.NEW_AMOUNT,
-    [ARMoneyAppealReason.OTHER]: TransactionAppealReason.OTHER,
+export const ARMoneyToTransactionAppealReason: Record<ARMoneyAppealReason, ARMoneyTransactionAppealReason> = {
+    [ARMoneyAppealReason.TRADER_NOT_CONFIRM_PAYMENT]: ARMoneyTransactionAppealReason.TRADER_NOT_CONFIRM_PAYMENT,
+    [ARMoneyAppealReason.OVERPAYMENT]: ARMoneyTransactionAppealReason.OVERPAYMENT,
+    [ARMoneyAppealReason.INVOICE_EXPIRED_WITH_PAYMENT]: ARMoneyTransactionAppealReason.INVOICE_EXPIRED_WITH_PAYMENT,
+    [ARMoneyAppealReason.FRAUD]: ARMoneyTransactionAppealReason.FRAUD,
+    [ARMoneyAppealReason.PAYMENT_NOT_RECEIVED]: ARMoneyTransactionAppealReason.PAYMENT_NOT_RECEIVED,
+    [ARMoneyAppealReason.BUYER_PAID_LESS]: ARMoneyTransactionAppealReason.BUYER_PAID_LESS,
+    [ARMoneyAppealReason.MALICIOUS_ORDER_CANCELLATION]: ARMoneyTransactionAppealReason.MALICIOUS_ORDER_CANCELLATION,
+    [ARMoneyAppealReason.CONFIRMATION_DOCUMENTS]: ARMoneyTransactionAppealReason.CONFIRMATION_DOCUMENTS,
+    [ARMoneyAppealReason.BANK_ACCOUNT_FROZEN]: ARMoneyTransactionAppealReason.BANK_ACCOUNT_FROZEN,
+    [ARMoneyAppealReason.NEW_AMOUNT]: ARMoneyTransactionAppealReason.NEW_AMOUNT,
+    [ARMoneyAppealReason.OTHER]: ARMoneyTransactionAppealReason.OTHER,
 };
 
-export const ARMoneyToTransactionStatus: Record<ARMoneyInvoiceStatus, TransactionStatus> = {
-    [ARMoneyInvoiceStatus.CREATED]: TransactionStatus.CREATE,
-    [ARMoneyInvoiceStatus.WAITING_FOR_PAYMENT]: TransactionStatus.WAITING_FOR_PAYMENT,
-    [ARMoneyInvoiceStatus.WAITING_FOR_PAYMENT_CONFIRMATION]: TransactionStatus.WAITING_FOR_PAYMENT_CONFIRMATION,
-    [ARMoneyInvoiceStatus.PAID]: TransactionStatus.PAID,
-    [ARMoneyInvoiceStatus.TIMEOUT]: TransactionStatus.TIMEOUT,
-    [ARMoneyInvoiceStatus.CANCELLED]: TransactionStatus.CANCELLED,
-    [ARMoneyInvoiceStatus.INCORRECT_AMOUNT]: TransactionStatus.INCORRECT_AMOUNT,
-    [ARMoneyInvoiceStatus.RESTORED]: TransactionStatus.RESTORED,
+export const ARMoneyToTransactionStatus: Record<ARMoneyInvoiceStatus, ARMoneyTransactionStatus> = {
+    [ARMoneyInvoiceStatus.CREATED]: ARMoneyTransactionStatus.CREATE,
+    [ARMoneyInvoiceStatus.WAITING_FOR_PAYMENT]: ARMoneyTransactionStatus.WAITING_FOR_PAYMENT,
+    [ARMoneyInvoiceStatus.WAITING_FOR_PAYMENT_CONFIRMATION]: ARMoneyTransactionStatus.WAITING_FOR_PAYMENT_CONFIRMATION,
+    [ARMoneyInvoiceStatus.PAID]: ARMoneyTransactionStatus.PAID,
+    [ARMoneyInvoiceStatus.TIMEOUT]: ARMoneyTransactionStatus.TIMEOUT,
+    [ARMoneyInvoiceStatus.CANCELLED]: ARMoneyTransactionStatus.CANCELLED,
+    [ARMoneyInvoiceStatus.INCORRECT_AMOUNT]: ARMoneyTransactionStatus.INCORRECT_AMOUNT,
+    [ARMoneyInvoiceStatus.RESTORED]: ARMoneyTransactionStatus.RESTORED,
 };
 
-export const ARMoneyToTransactionAppealState: Record<ARMoneyAppealState, TransactionAppealState> = {
-    [ARMoneyAppealState.NOT_SET]: TransactionAppealState.NOT_SET,
-    [ARMoneyAppealState.APPEALED]: TransactionAppealState.APPEALED,
-    [ARMoneyAppealState.USER_SUCCESS]: TransactionAppealState.USER_SUCCESS,
-    [ARMoneyAppealState.TRADER_SUCCESS]: TransactionAppealState.TRADER_SUCCESS,
+export const ARMoneyToTransactionAppealState: Record<ARMoneyAppealState, ARMoneyTransactionAppealState> = {
+    [ARMoneyAppealState.NOT_SET]: ARMoneyTransactionAppealState.NOT_SET,
+    [ARMoneyAppealState.APPEALED]: ARMoneyTransactionAppealState.APPEALED,
+    [ARMoneyAppealState.USER_SUCCESS]: ARMoneyTransactionAppealState.USER_SUCCESS,
+    [ARMoneyAppealState.TRADER_SUCCESS]: ARMoneyTransactionAppealState.TRADER_SUCCESS,
 };

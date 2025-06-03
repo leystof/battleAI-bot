@@ -1,4 +1,4 @@
-import {Match, MatchStatus} from "@/database/models/match";
+import {Match, MatchStatus} from "@/database/models/game/match";
 import {Context} from "@/database/models/context";
 import {matchRepository} from "@/database";
 import {checkResultPrompt} from "@/handlers/game/match/prompt/checkResult";
