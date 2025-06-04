@@ -27,7 +27,7 @@ export async function preInvoiceUsdt(ctx: Context) {
 💰 <b>Подтверждение пополнения</b>
 
 💳 <b>К оплате:</b> ${amount} USDT
-💵 <b>Поступит на баланс:</b> ${amount - getPercent(amount,tier.percent)} ${config.currencyName}
+💵 <b>Поступит на баланс:</b> ${amount - getPercent(amount,Number(tier.percent) + Number(tier.extraPercent))} ${config.currencyName}
 
 После успешной оплаты средства автоматически поступят на ваш игровой баланс.
 

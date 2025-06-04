@@ -27,6 +27,7 @@ export interface ARMoneyCallbackInvoice {
     'invoice_id': string,
     'state': number,
     'new_amount': string,
+    'price': number,
     'amount': string,
     'appeal_state': number,
     'appeal_reason': string

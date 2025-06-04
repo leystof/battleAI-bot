@@ -31,9 +31,9 @@ export function beforeStart() {
         }
     }))
     setupSession(bot)
-    StopMiddleware(bot)
     UserMiddleware(bot)
     PoolMiddleware(bot)
+    StopMiddleware(bot)
     setupHandlers(bot)
     dataSourceDatabase
         .initialize()

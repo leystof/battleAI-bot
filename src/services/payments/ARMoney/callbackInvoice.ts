@@ -50,7 +50,7 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
         armoneyTx.user = await manager.findOneOrFail(User, { where: { id: armoneyTx.userId }, lock: { mode: "pessimistic_write" } });
         const amount = data.new_amount ?? data.amount;
         const preNewAmount = Number(amount) - getPercent(Number(amount), armoneyTx.percentProvider);
-        const newAmount = await rubToUsdt(preNewAmount, {fee: 3,source: "armoney"})
+        const newAmount = await rubToUsdt(Number(amount), {percent: armoneyTx.percentProvider, extraPercent: armoneyTx.extraFeePercent, rate: data.price,source: "armoney"})
         const newStatus = ARMoneyToTransactionStatus[data.state];
 
         if (String(data.appeal_state)) {
@@ -92,7 +92,8 @@ export async function callbackInvoiceARMoney(data: ARMoneyCallbackInvoice) {
 <code>#ID_${armoneyTx.externalId}</code>
 
 <b>🏷 User ID:</b> <code>${armoneyTx.user.id}</code>
-<b>💸 Пополнение баланса:\n ${amount} ₽ | ${preNewAmount} ₽ | ${newAmount} ${config.currencyName} | ${armoneyTx.percentProvider}%</b>
+<b>📊 Курс:</b> ${data?.["price"]}
+<b>💸 Пополнение баланса:\n ${amount} ₽ | ${preNewAmount} ₽ | ${newAmount} ${config.currencyName} | ${armoneyTx.percentProvider}% | ${armoneyTx.extraFeePercent}%</b>
 <b>🙍‍♂️ Пользователь: ${await getUsername(armoneyTx.user)}</b>
                 `, { parse_mode: "HTML" });
             } catch (e) {

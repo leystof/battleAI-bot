@@ -31,7 +31,7 @@ export async function preInvoiceRub(ctx: Context) {
 💰 <b>Подтверждение пополнения</b>
 
 💳 <b>К оплате:</b> ${amount} ₽
-💵 <b>Поступит на баланс:</b> ${await rubToUsdt(amount - getPercent(amount,tier.percent), {fee: 3, source: config.paymentRubProvider.name as undefined})} ${config.currencyName}
+💵 <b>Поступит на баланс:</b> ${await rubToUsdt(amount, {percent: tier.percent, extraPercent: tier.extraPercent, source: config.paymentRubProvider.name as undefined})} ${config.currencyName}
 
 После успешной оплаты средства автоматически поступят на ваш игровой баланс.
 
@@ -71,7 +71,7 @@ export async function createInvoiceRub(ctx: Context) {
             }
         })
     }
-    const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentUsdtProvider}})
+    const tier = await tierProviderRepository.findOne({where: {provider: configDb.paymentRubProvider}})
 
     await ctx.editMessageText(`⏳️️️️️️️ Создание ссылки для оплаты...`, {
         reply_markup: {
@@ -113,6 +113,7 @@ export async function createInvoiceRub(ctx: Context) {
     newTx.userId = ctx.user.id
     newTx.amount = Number(createInvoice["amount"])
     newTx.percentProvider = tier.percent
+    newTx.extraFeePercent = tier.extraPercent
     newTx.type = TransactionType.TOP_UP
     newTx.status = ARMoneyTransactionStatus.CREATE
     newTx.currency = ARMoneyTransactionCurrency.RUB

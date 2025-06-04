@@ -38,8 +38,19 @@ export class Armoney {
     @Column({ name: 'amount', type: 'decimal', precision: 18, scale: 2, nullable: false })
     amount: number
 
-    @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2 })
+    @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2,
+        transformer: {
+            to: (value: number) => value,
+            from: (value: string | number) => Number(value)
+        },})
     percentProvider: number;
+
+    @Column({ name: 'extraFeePercent', type: 'decimal', precision: 18, scale: 2, default: 0,
+        transformer: {
+            to: (value: number) => value,
+            from: (value: string | number) => Number(value)
+        }})
+    extraFeePercent: number;
 
     @Column({
         type: 'enum',

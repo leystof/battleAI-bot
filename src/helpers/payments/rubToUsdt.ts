@@ -3,7 +3,9 @@ import {arMoney} from "@/services/payments/ARMoney";
 export async function rubToUsdt(
     rub: number,
     option: {
-        fee: number;
+        percent: number;
+        extraPercent?: number;
+        rate?: number;
         source: "armoney";
     }
 ): Promise<number> {
@@ -14,14 +16,16 @@ export async function rubToUsdt(
         //     rate = await getBybitRate(); // например, 93.5
         //     break;
         case "armoney":
-            rate = await arMoney.getRubRate(); // например, 94.2
+            rate = (option.rate) ? option.rate : 82
             break;
         default:
             throw new Error("Unknown source");
     }
 
-    const rubAfterFee = rub - rub * (option.fee / 100);
+    const togetherPercent = Number(option.percent) + Number(option.extraPercent)
+    const rubAfterFee = rub - rub * (togetherPercent / 100);
 
+    console.log(rubAfterFee)
     const usdt = rubAfterFee / rate;
 
     return Number(usdt.toFixed(2));

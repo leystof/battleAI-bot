@@ -39,10 +39,16 @@ export class Cryptomus {
     @Column({ name: 'amount', type: 'decimal', precision: 18, scale: 2, nullable: false })
     amount: number
 
-    @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2 })
+    @Column({ name: 'percent', type: 'decimal', precision: 18, scale: 2,transformer: {
+            to: (value: number) => value,
+            from: (value: string | number) => Number(value)
+        } })
     percentProvider: number;
 
-    @Column({ name: 'extraFeePercent', type: 'decimal', precision: 18, scale: 2, default: 0 })
+    @Column({ name: 'extraFeePercent', type: 'decimal', precision: 18, scale: 2,transformer: {
+            to: (value: number) => value,
+            from: (value: string | number) => Number(value)
+        }, default: 0 })
     extraFeePercent: number;
 
     @Column({

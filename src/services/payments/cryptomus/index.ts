@@ -13,10 +13,10 @@ export class CryptomusApi {
     private shopId: string;
     private callbackInvoiceUrl: string;
 
-    constructor(apiKey: string, shopId: string, domain: string) {
+    constructor(apiKey: string, shopId: string, callbackInvoiceUrl: string) {
         this.apiKey = apiKey;
         this.shopId = shopId;
-        this.callbackInvoiceUrl = domain;
+        this.callbackInvoiceUrl = callbackInvoiceUrl;
 
         this.client = axios.create({
             baseURL: "https://api.cryptomus.com",

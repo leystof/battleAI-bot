@@ -3,10 +3,11 @@ import {Context} from "@/database/models/context";
 import {UserStatus} from "@/database/models/user/user";
 import {formatIntWithDot} from "@/helpers/formatIntWithDot";
 import {getWinPercent} from "@/helpers/winPercent";
-import {cryptomus} from "@/services/payments/cryptomus";
 import {Config} from "@/database/models/config";
 import {getCachedConfig} from "@/modules/cache/config";
-import {arMoney} from "@/services/payments/ARMoney";
+import {sequoia} from "@/services/payments/sequoia";
+import {getFormattedDate} from "@/helpers/getFormattedDate";
+import { v4 as uuidv4 } from 'uuid';
 
 export const composer = new Composer<Context>()
 composer.hears('👤 Профиль', profileMenu)
@@ -37,39 +38,18 @@ const keyb = (ctx: Context) => {
 }
 export async function profileMenu(ctx) {
     try {
-        await cryptomus.testCallback({
-            order_id: "3be3b443-9971-44c4-8218-75de81f8750a",
-            uuid: "3be3b443-9971-44c4-8218-75de81f8750a",
-            status: "paid",
-            currency: "USDT",
-            network: "BSC",
+        const a = await sequoia.createInvoice({
+            amount: 1000,
+            currency: "RUB",
+            date: getFormattedDate(),
+            order_id: uuidv4(),
+            payment_method: 1,
         })
-        // const  a = await cryptomus.getPayment({
-        //     order_id: "3be3b443-9971-44c4-8218-75de81f8750a",
-        //     // uuid: "3be3b443-9971-44c4-8218-75de81f8750a",
-        // })
-        // console.log(a)
+        console.log(a);
     }catch (e) {
         console.log(e)
     }
-    // try {
-    //     await arMoney.testPaid("bc9fd174-0980-45f6-8c43-3229b6a47f35")
-    // }catch (e) {
-    //     console.log(e)
-    // }
-    // try {
-    //     const cr = await cryptomus.createInvoice({
-    //         amount: "25000",
-    //         currency: "USD",
-    //         is_payment_multiple: false,
-    //         subtract: 100,
-    //         order_id: "123а23"
-    //     })
-    //
-    //     console.log(cr)
-    // } catch (e) {
-    //     console.log(e)
-    // }
+
 
     return ctx.reply(text(ctx, await getCachedConfig()),{
         reply_markup: keyb(ctx)
@@ -83,3 +63,22 @@ export async function profileMenuCallback(ctx) {
         reply_markup: keyb(ctx)
     })
 }
+
+// try {
+//     await arMoney.testPaid("bc9fd174-0980-45f6-8c43-3229b6a47f35")
+// }catch (e) {
+//     console.log(e)
+// }
+// try {
+//     const cr = await cryptomus.createInvoice({
+//         amount: "25000",
+//         currency: "USD",
+//         is_payment_multiple: false,
+//         subtract: 100,
+//         order_id: "123а23"
+//     })
+//
+//     console.log(cr)
+// } catch (e) {
+//     console.log(e)
+// }
